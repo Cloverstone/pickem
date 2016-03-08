@@ -1,0 +1,31 @@
+body{
+  /* Safari 4-5, Chrome 1-9 */
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#236F2F), to(#2C883A));
+
+  /* Safari 5.1, Chrome 10+ */
+  background: -webkit-linear-gradient(top, #236F2F, #2C883A);
+
+  /* Firefox 3.6+ */
+  background: -moz-linear-gradient(top, #236F2F, #2C883A);
+
+  /* IE 10 */
+  background: -ms-linear-gradient(top, #236F2F, #2C883A);
+
+  /* Opera 11.10+ */
+  background: -o-linear-gradient(top, #236F2F, #2C883A);
+	background-color: #2C883A;
+
+	background-repeat: no-repeat;
+  background-size: 100% 100px;
+  background-position: 0 52px;
+}
+#top{
+	background:#333;
+  border-bottom: solid 1px #000;
+}
+#top a{
+  color:#bbb;
+}
+#top a:hover{
+  color:#666;
+}
