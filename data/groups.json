@@ -1,0 +1,10 @@
+[
+  {
+    "name": "Us",
+    "members":["adam", "chris"]
+  },
+  {
+    "name": "smallcombs",
+    "members": ["adam", "chris", "christine"]
+  }
+]

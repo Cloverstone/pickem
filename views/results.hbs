@@ -1,0 +1,23 @@
+<div>
+	{{>weeks}}
+	{{#groups}}
+	<div>
+		<div>{{name}}</div>
+		{{#members}}
+		<div class="member">
+		<span class="main">
+			<span class="username">{{username}}</span>
+			<span class="total">{{total}}</span>
+			<span class="wins">{{wins}}/17</span>
+		</span>
+			{{#games}}
+			<span class="playerResult{{#winner}} correct{{/winner}}">
+				<span class="team-icon {{pick}}"></span>
+				{{points}}
+			</span>
+			{{/games}}
+			</div>
+		{{/members}}
+	</div>
+	{{/groups}}
+</div>
