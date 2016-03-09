@@ -2,19 +2,31 @@
 /**
  * Module dependencies.
  */
+const koa = require('koa');
+const app = koa();
+const fs = require('co-fs');
 
 // var render = require('./lib/render');
 // var logger = require('koa-logger');
-var route = require('koa-route');
-var parse = require('co-body');
-var handlebars = require("koa-handlebars");
-var serve = require('koa-static-folder');
-var koa = require('koa');
-var _ = require('lodash');
-const passport = require('koa-passport')
-var app = koa();
+const route = require('koa-route');
+const parse = require('co-body');
+const handlebars = require("koa-handlebars");
+const serve = require('koa-static-folder');
 
-var fs = require('co-fs');
+
+// const convert = require('koa-convert') // necessary until koa-generic-session has been updated to support koa@2 
+const session = require('koa-generic-session')
+
+
+app.keys = ['secret']
+// app.use(convert(session()))
+
+const _ = require('lodash');
+const passport = require('koa-passport')
+
+app.use(passport.initialize())
+app.use(passport.session())
+
 // var Promise = require('bluebird');
 // var fs = Promise.promisifyAll(require('fs'));
 // "database"
@@ -26,8 +38,6 @@ var groups = {};
 var picks = {};
 var games;
 var globalData = {};
-app.use(passport.initialize())
-app.use(passport.session())
 app.use(
   function *(next){
     users = {
@@ -77,18 +87,33 @@ app.use(handlebars({
 //   yield next;
 // })
 // route middleware
+// route definitions
+
+
+// app.use(route.get('/', season));
+app.use(function*(next) {
+  console.log(this.req.url)
+  // if (this.isAuthenticated()) {
+    yield next
+  // } else {
+  //   this.redirect('/')
+  // }
+})
 
 app.use(route.get('/', season));
 app.use(route.get('/results/:week', results));
 app.use(route.get('/picks/:week', picker));
 
+app.use(route.get('/login', showLogin));
+app.use(route.post('/login', login));
+app.use(route.get('/logout', logout));
 
-app.use(route.get('/post/new', add));
-app.use(route.get('/data/:id', show));
-app.use(route.post('/post', create));
-app.use(route.post('/data/:id', update));
 
-// route definitions
+// app.use(route.get('/post/new', add));
+// app.use(route.get('/data/:id', show));
+// app.use(route.post('/post', create));
+// app.use(route.post('/data/:id', update));
+
 
 
 /**
@@ -176,7 +201,19 @@ function *picker(week) {
 
 
 
+function *showLogin(week) {
+  yield this.render("login", globalData);
+}
 
+function *login(week) {
+  this.redirect('/');
+}
+
+
+
+function *logout(week) {
+  this.redirect('/login');
+}
 
 
 
