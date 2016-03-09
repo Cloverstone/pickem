@@ -11,6 +11,7 @@ var handlebars = require("koa-handlebars");
 var serve = require('koa-static-folder');
 var koa = require('koa');
 var _ = require('lodash');
+const passport = require('koa-passport')
 var app = koa();
 
 var fs = require('co-fs');
@@ -25,7 +26,8 @@ var groups = {};
 var picks = {};
 var games;
 var globalData = {};
-
+app.use(passport.initialize())
+app.use(passport.session())
 app.use(
   function *(next){
     users = {
@@ -112,7 +114,10 @@ function *results(week) {
   if(week == 'current')week = '1';
   globalData.weeks[parseInt(week, 10)-1].current = true;
   var games = _.filter(globalData.schedule, {'week': week}).map(function(game){
-    return _.pick(game,['id','winner']);
+    game.homewin = (game.winner == game.home);
+    game.awaywin = (game.winner == game.away);
+    return game;
+    // return _.pick(game,['id','winner', ]);
   })
   var ids = games.map(function(game){
     return game.id;
@@ -143,6 +148,7 @@ function *results(week) {
     })
     return group;
   })
+  globalData.games = games;
   yield this.render("results", globalData);
 }
 
@@ -155,7 +161,14 @@ function *picker(week) {
   var ids = games.map(function(game){
     return game.id;
   })
+  var picks = globalData['adam'].filter(function(game){
+        return (ids.indexOf(game.id) >=0);
+      })
+  var ids = games.map(function(game){
+    return game.id;
+  })
   globalData.games = JSON.stringify(games);
+  globalData.picks = JSON.stringify(picks);
   yield this.render("picks", globalData);
 }
 

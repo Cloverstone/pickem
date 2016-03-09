@@ -1,4 +1,11 @@
 @font-face {font-family: 'digital';src: url('/assets/font/DS-DIGI.TTF');}
+
+
+@media (min-width: 1200px){
+.container {
+    width: 675px;
+}
+}
 body{
   /* Safari 4-5, Chrome 1-9 */
   background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#236F2F), to(#2C883A));
@@ -27,17 +34,29 @@ body{
   background: #c5c5c5;
   height:60px;
 }
-.member span{float:left;}
-.main{width:100px;height: 60px;position: relative;}
-.main .total{position:absolute;bottom:2px;left:2px;}
-.main .username{position:absolute;top:2px;right:2px;font-weight:bold;}
-.main .wins{position:absolute;bottom:2px;right:2px;}
+.member span,.teams span{float:left;}
+.teams{height:34px;line-height: 34px}
+.member .main{height: 60px;}
+.main span{position:absolute;}
+.main .total{bottom:2px;left:2px;}
+.main .username{top:2px;right:2px;font-weight:bold;}
+.main .wins{bottom:2px;right:2px;}
 .playerResult{display:inline-block;width:34px;text-align: center;font-size: 24px;line-height: 24px;color:#808080;}
 .playerResult .team-icon,.cube{height:30px;width:30px;display:inline-block;text-align: center;line-height: 30px}
 .correct{background-color:#AFFF84}
+/*.week{
+  background: #333;
+  border: solid 1px;
+  border-color: #555 #111 #111 #555;
+}*/
+.main{width:100px;30px;position: relative;text-align: right;display: inline-block;}
 
-
-
+.weeks a{float:left;
+  background: #333;
+  border: solid 1px;
+  border-color: #555 #111 #111 #555;
+  color:#ddd;
+}
 
 
 

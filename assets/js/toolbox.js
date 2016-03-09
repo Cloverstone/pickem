@@ -13,15 +13,26 @@ alert = function(value){ if(debug){console.log(value);} };
 
 window.onload =function(){
 	if($('#form').length){
-		$('#form').berry({default:{type: 'gamePick', min: 1, max: data.length}, fields: data });
+		$('#form').berry({
+			actions:['save'],
+			default:{type: 'gamePick', min: 1, max: data.length},
+			attributes: _.keyBy(picks, 'id'), 
+			fields: data 
+		}).on('save', function(){
+			var results = this.toJSON();
+			results = Object.keys(results).map(function(key) {
+			   return results[key];
+			});
+			console.log(results)
+		});
 	}
 }
 
 
 var gamePick = `
-<div class="row clearfix {{modifiers}}" name="{{id}}" data-type="{{type}}" style="background:#fefefe;border-bottom:solid 1px #888;padding:5px">
+<div class="row clearfix {{modifiers}}" name="{{id}}" data-type="{{type}}" style="background:#eee;border-bottom:solid 1px #888;padding:5px">
 	<div class="col-md-5" style="text-align:right">
-		<div class="btn btn-default" data-value="{{{away}}}" style="width: 200px;line-height: 26px;">{{{away}}}<span class="cube team-icon {{away}}" style="margin:-2px;float:right"></span></div>
+		<div class="btn btn-none" data-value="{{{away}}}" style="width: 200px;line-height: 20px;">{{{away}}}<span class="cube team-icon {{away}}" style="margin:-5px;float:right"></span></div>
 	</div>
 	<div class="col-md-2" >
 	<select class="form-control"  name="{{id}}" {{^isEnabled}}readonly disabled="true"{{/isEnabled}}  {{#multiple_enable}}multiple{{/multiple_enable}} >
@@ -33,7 +44,7 @@ var gamePick = `
 	</select>
 	</div>
 	<div class="col-md-5" style="text-align:left">
-		<div class="btn btn-default" data-value="{{{home}}}" style="width: 200px;line-height: 26px;"><span class="cube team-icon {{home}}" style="margin:-2px;float:left"></span>{{{home}}}</div>
+		<div class="btn btn-none" data-value="{{{home}}}" style="width: 200px;line-height: 20px;"><span class="cube team-icon {{home}}" style="margin:-5px;float:left"></span>{{{home}}}</div>
 	</div>
 </div>`;
 
@@ -47,7 +58,7 @@ templates['berry_gamePick'] = Hogan.compile(gamePick, templates);
 		},
 		defaults: {
 			selectedClass: 'btn-success',
-			defaultClass: 'btn-default',
+			defaultClass: 'btn-none',
 		},
 		setup: function() {
 			this.$el = this.self.find('select');
@@ -57,8 +68,6 @@ templates['berry_gamePick'] = Hogan.compile(gamePick, templates);
 			}
 			this.$el.change($.proxy(function(){this.trigger('change');}, this));
 
-
-			// this.$el = this.self;
 			this.self.find('.btn').off();
 			this.self.find('.btn').on('click', $.proxy(function(e){
 				this.self.find('.' + this.selectedClass).toggleClass(this.selectedClass + ' ' + this.defaultClass);
@@ -68,29 +77,19 @@ templates['berry_gamePick'] = Hogan.compile(gamePick, templates);
 				}
 				this.trigger('change');
 			}, this));
-
-
-
 		},
 		getValue: function() {
-			// var selected = this.self.find('[type="radio"]:checked').data('label');
-			// for(var i in this.item.options) {
-			// 	if(this.item.options[i].label == selected) {
-			// 		return this.item.options[i].value;
-			// 	}
-			// }
-			return {points: this.$el.val(), pick: this.self.find('.' + this.selectedClass).attr('data-value')}; 
+			return {
+				points: this.$el.val(), 
+				pick: this.self.find('.' + this.selectedClass).attr('data-value'),
+				id: this.id
+			}; 
 		},
 		setValue: function(value) {
 			this.value = value;
-			this.self.find('[value="' + this.value + '"]').prop('checked', true);
+			this.$el.val(value.points)
+			this.self.find('[data-value="'+value.pick+'"]').click();
 		},
-		// 		getValue: function() {
-		// 	return this.$el.children('.' + this.selectedClass).attr('data-value');
-		// },
-		// setValue: function(val) {
-		// 	return this.$el.children('[data-value="'+val+'"]').click();
-		// },
 		displayAs: function() {
 			for(var i in this.item.options) {
 				if(this.item.options[i].value == this.lastSaved) {
