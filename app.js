@@ -5,13 +5,14 @@
 const koa = require('koa');
 const app = koa();
 const fs = require('co-fs');
-
+var co = require('co')
 // var render = require('./lib/render');
 // var logger = require('koa-logger');
 const route = require('koa-route');
-const parse = require('co-body');
+const parse = require('koa-bodyparser');
 const handlebars = require("koa-handlebars");
 const serve = require('koa-static-folder');
+var LocalStrategy = require('passport-local').Strategy;
 
 
 // const convert = require('koa-convert') // necessary until koa-generic-session has been updated to support koa@2 
@@ -20,13 +21,15 @@ const session = require('koa-generic-session')
 
 app.keys = ['secret']
 // app.use(convert(session()))
-
+ app.use(session({
+    key: 'koapassportexample.sid',
+  }));
 const _ = require('lodash');
 const passport = require('koa-passport')
 
+app.use(parse());
 app.use(passport.initialize())
 app.use(passport.session())
-
 // var Promise = require('bluebird');
 // var fs = Promise.promisifyAll(require('fs'));
 // "database"
@@ -38,6 +41,59 @@ var groups = {};
 var picks = {};
 var games;
 var globalData = {};
+
+
+// function AuthLocalUser(username, password, done) {  
+//   co(function *() {
+//     try {
+//       return yield function *(username, password) { return {name: username}; };//User.matchUser(username, password);
+//     } catch (ex) {
+//       return null;
+//     }
+//   })(done);
+// };
+//  passport.use(new LocalStrategy(AuthLocalUser));
+
+passport.use(new LocalStrategy(
+    function (username, password, done) {
+//         co(function *() {
+// console.log('test');
+//     try {                
+//       // ;
+
+//       return yield true;//User.matchUser(username, password);
+//     } catch (ex) {
+//       return null;
+//     }
+//   })(done);
+        // var data = yield parse(this);
+return done(null, {id: 'adam'})
+        // User.findOne({ username: username }, function(err, user) {
+        //     if (err) { return done(err); }
+
+        //     if (!user) {
+        //         return done(null, false, { message: 'Incorrect username.' });
+        //     }
+        //     // if (!user.validPassword(password)) {
+        //     //   return done(null, false, { message: 'Incorrect password.' });
+        //     // }
+        //     return done(null, user);
+        // });
+    }
+));
+passport.serializeUser(function(user, done) { 
+  console.log('serialhere')
+    done(null, 'adam');
+});
+
+passport.deserializeUser(function(id, done) {  
+          done(null, {name:id});
+
+    // User.findById(id, function(err, user) {
+    //     done(err, user);
+    // });
+});
+
 app.use(
   function *(next){
     users = {
@@ -93,19 +149,30 @@ app.use(handlebars({
 // app.use(route.get('/', season));
 app.use(function*(next) {
   console.log(this.req.url)
-  // if (this.isAuthenticated()) {
-    yield next
-  // } else {
-  //   this.redirect('/')
-  // }
+  // this.request.body
+  if(this.req.url !== '/login'){
+    if (this.isAuthenticated()) {
+      console.log(this.req.user)
+      yield next
+    } else {
+      this.redirect('/login')
+    }
+  }else{yield next;}
 })
 
 app.use(route.get('/', season));
 app.use(route.get('/results/:week', results));
+app.use(route.get('/results/', results));
 app.use(route.get('/picks/:week', picker));
+app.use(route.get('/picks/', picker));
 
 app.use(route.get('/login', showLogin));
-app.use(route.post('/login', login));
+// app.use(route.post('/login', login));
+app.use(route.post('/login', passport.authenticate('local', {
+    successRedirect: '/',
+    failureRedirect: '/login'
+  })) );
+// app.post('/login', );
 app.use(route.get('/logout', logout));
 
 
@@ -121,7 +188,6 @@ app.use(route.get('/logout', logout));
  */
 
 function *season() {
-  // console.log(globalData.groups);
   globalData.groups = globalData.groups.map(function(group){
     group.members = group.members.map(function(member){
       var temp = users[member];
@@ -136,7 +202,7 @@ function *season() {
 }
 
 function *results(week) {
-  if(week == 'current')week = '1';
+  if(typeof week === 'object')week = '1';
   globalData.weeks[parseInt(week, 10)-1].current = true;
   var games = _.filter(globalData.schedule, {'week': week}).map(function(game){
     game.homewin = (game.winner == game.home);
@@ -178,7 +244,7 @@ function *results(week) {
 }
 
 function *picker(week) {
-  if(week == 'current')week = '1';
+  if(typeof week === 'object')week = '1';
   globalData.weeks[parseInt(week, 10)-1].current = true;
   var games = _.filter(globalData.schedule, {'week': week}).map(function(game){
     return _.pick(game,['id','home', 'away']);
@@ -205,9 +271,35 @@ function *showLogin(week) {
   yield this.render("login", globalData);
 }
 
-function *login(week) {
-  this.redirect('/');
-}
+// function *login() {
+//   console.log('here1');
+//  yield passport.authenticate('local', {
+//     successRedirect: '/',
+//     failureRedirect: '/login'
+//   });
+//   var data = yield parse(this);
+//       // console.log('first');
+//   // var temp = yield passport.authenticate('local', { successRedirect: '/',
+//   //   failureRedirect: '/login',
+//   //   failureFlash: false,
+//   //   session: true })
+//   var ctx = this
+
+//   yield passport.authenticate('local', function*(err, user, info) {
+//     console.log(info);
+//     if (err) throw err
+//     if (user === false) {
+//       ctx.status = 401
+//       ctx.body = { success: false }
+//     } else {
+//       yield ctx.login(user)
+//       ctx.body = { success: true }
+//     }
+//   })//.call(this, next)
+
+//   // console.log(data)
+//   this.redirect('/');
+// }
 
 
 

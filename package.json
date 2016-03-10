@@ -10,9 +10,11 @@
   "license": "ISC",
   "dependencies": {
     "bluebird": "^3.3.3",
+    "co": "^4.6.0",
     "co-body": "^4.0.0",
     "co-fs": "^1.2.0",
     "koa": "^1.1.2",
+    "koa-bodyparser": "^2.0.1",
     "koa-convert": "^1.2.0",
     "koa-generic-session": "^1.10.1",
     "koa-handlebars": "^0.5.7",
@@ -23,6 +25,7 @@
     "marked": "^0.3.5",
     "mustache": "^2.2.1",
     "node-sass": "^3.4.2",
-    "node-static": "^0.7.7"
+    "node-static": "^0.7.7",
+    "passport-local": "^1.0.0"
   }
 }
