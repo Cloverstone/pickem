@@ -27,16 +27,19 @@
 						<span class="icon-bar"></span> 
 						<span class="icon-bar"></span> 
 					</button> 
-					<a href="../" class="navbar-brand">Pickem</a> 
+					<a href="/" class="navbar-brand">Pickem</a> 
 				</div> 
 				<nav id="bs-navbar" class="collapse navbar-collapse"> 
+					{{#user.id}}
 					<ul class="nav navbar-nav"> 
-						<li class="active"> <a href="/">Home</a> </li> 
+						<!-- <li class="active"> <a href="/">Home</a> </li>  -->
 						<li> <a href="/picks/">Picks</a> </li>
 						<li> <a href="/results/">Results</a> </li> 
 					</ul>
+					{{/user.id}}
 					<ul class="nav navbar-nav navbar-right"> 
-						<li><a href="#" onclick="">Guest</a></li> 
+						{{#user.id}}<li><a href="/logout" onclick="">Logout</a></li>{{/user.id}}
+						<li><a href="/account" onclick="">{{user.id}}{{^user.id}}Guest{{/user.id}}</a></li> 
 					</ul> 
 				</nav> 
 			</div> 

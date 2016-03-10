@@ -34,6 +34,7 @@ body{
   background: #c5c5c5;
   height:60px;
 }
+.member.active{background: #d8d8d8}
 .member span,.teams span{float:left;}
 .teams{height:34px;line-height: 34px}
 .member .main{height: 60px;}
@@ -49,6 +50,9 @@ body{
   border: solid 1px;
   border-color: #555 #111 #111 #555;
 }*/
+[data-type=gamePick] .btn:hover{
+    border-color:#888;
+}
 .main{width:100px;30px;position: relative;text-align: right;display: inline-block;}
 
 .weeks a{float:left;
