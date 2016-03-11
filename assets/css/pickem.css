@@ -3,7 +3,7 @@
 
 @media (min-width: 1200px){
 .container {
-    width: 675px;
+    width: 750px;
 }
 }
 body{
@@ -53,6 +53,11 @@ body{
 [data-type=gamePick] .btn:hover{
     border-color:#888;
 }
+[data-type=gamePick]{background:#f4f4f8;background:rgba(255,255,255,.8);}
+[data-type=gamePick].has-error{
+  background: #C44444;
+  color:#fff;
+}
 .main{width:100px;30px;position: relative;text-align: right;display: inline-block;}
 
 .weeks a{float:left;
@@ -63,7 +68,11 @@ body{
   text-decoration: none;
 }
 
-
+.games{    font-size: 16px;
+  font-weight: bold;
+  color: #FFF;
+  margin: 10px;
+}
 
 .team-icon{background-image:url(/assets/img/teamIconsNew.png);background-position: 0 -120px;margin:2px;}
 /* positioning */

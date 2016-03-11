@@ -30,7 +30,7 @@ app.use(passport.session())
 
 app.use(mongo({
   // uri: 'mongodb://cloudberry:cberry117@ds041851.mongolab.com:41851/cloudberry', //or url
-  uri: 'mongodb://cloudberry:cberry117@ds011439.mlab.com:11439/pickem',
+  uri: 'mongodb://pickem:pickem117@ds011439.mlab.com:11439/pickem',
 
   max: 100,
   min: 1,

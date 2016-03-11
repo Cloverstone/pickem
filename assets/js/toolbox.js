@@ -10,27 +10,40 @@ debug=true;
 alert = function(value){ if(debug){console.log(value);} };
 
 
-
 window.onload =function(){
+			var n = [];
+			for(var i=1;i<=data.length;i++){
+				n.push(i);
+			}
+			$('.games').html(templates['available'].render({values: n}));
 	if($('#form').length){
 		$('#form').berry({
 			actions:['save'],
-			default:{type: 'gamePick', min: 1, max: data.length},
+			default:{type: 'gamePick', min: 1, max: data.length, default:{label: 'Choose', value: 0}, required: true},
 			attributes: _.keyBy(picks, 'id'), 
 			fields: data 
-		}).on('save', function(){
-			var results = this.toJSON();
-			results = Object.keys(results).map(function(key) {
-			   return results[key];
+		}).on('change', function(){
+
+			$('.games span').removeClass('text-muted');
+			this.usedValues = _.values(_.mapValues(this.toJSON(), function(o) { return parseInt(o.points, 10); }));
+			this.usedValues.map(function(value){
+				$('.games #point'+value).addClass('text-muted');
 			});
-			console.log(results)
-		});
+			if(!this.valid){
+				this.validate();	
+			}
+		}).on('save', function(){
+			console.log(_.values(this.toJSON(null, true)))
+		}).trigger('change');
 	}
 }
 
+var available = `<div>{{#values}}<span class="cube" id="point{{.}}">{{.}}</span>{{/values}}</div>`;
+templates['available'] = Hogan.compile(available, templates);
+
 
 var gamePick = `
-<div class="row clearfix {{modifiers}}" name="{{id}}" data-type="{{type}}" style="background:#eee;border-bottom:solid 1px #888;padding:5px">
+<div class="row clearfix {{modifiers}}" name="{{id}}" data-type="{{type}}" style="margin-bottom: 1px;padding:5px">
 	<div class="col-md-5" style="text-align:right">
 		<div class="btn btn-none" data-value="{{{away}}}" style="width: 200px;line-height: 20px;">{{{away}}}<span class="cube team-icon {{away}}" style="margin:-5px;float:right"></span></div>
 	</div>
@@ -70,7 +83,10 @@ templates['berry_gamePick'] = Hogan.compile(gamePick, templates);
 
 			this.self.find('.btn').off();
 			this.self.find('.btn').on('click', $.proxy(function(e){
-				this.self.find('.' + this.selectedClass).toggleClass(this.selectedClass + ' ' + this.defaultClass);
+
+				if(!$(e.target).closest('.btn').hasClass(this.selectedClass)){
+					this.self.find('.' + this.selectedClass).toggleClass(this.selectedClass + ' ' + this.defaultClass);
+				}
 				$(e.target).closest('.btn').toggleClass(this.selectedClass + ' ' + this.defaultClass);
 				if(typeof this.onchange === 'function'){
 					this.onchange();
@@ -99,6 +115,10 @@ templates['berry_gamePick'] = Hogan.compile(gamePick, templates);
 		},
 		focus: function(){
 			this.self.find('[type="radio"]:checked').focus();
-		}
+		},
+		satisfied: function(){
+
+			return (this.self.find('.' + this.selectedClass).length >0) && (this.$el.val() > 0) && (_.countBy(this.owner.usedValues, _.identity)[this.$el.val()] <= 1) //this.$el.is(':checked');
+		},
 	});
 })(Berry, jQuery);
