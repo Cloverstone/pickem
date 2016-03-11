@@ -10,7 +10,8 @@ const parse = require('koa-bodyparser');
 const handlebars = require("koa-handlebars");
 const serve = require('koa-static-folder');
 var LocalStrategy = require('passport-local').Strategy;
-var mongoose = require('koa-mongoose')
+// var mongoose = require('koa-mongoose')
+var mongo = require('koa-mongo');
 
 // const convert = require('koa-convert') // necessary until koa-generic-session has been updated to support koa@2 
 const session = require('koa-generic-session')
@@ -25,36 +26,25 @@ const passport = require('koa-passport')
 app.use(parse());
 app.use(passport.initialize())
 app.use(passport.session())
-// var Promise = require('bluebird');
-// var fs = Promise.promisifyAll(require('fs'));
-
-app.use(mongoose({
-    // mongoose: require('mongoose-q')(),//custom mongoose 
-    user: 'cloudberry',
-    pass: 'cberry117',
-    host: 'ds041851.mongolab.com/cloudberry',
-    port: 41851,
-    database: ctx => {
-        return ctx.headers['x-app']
-    },
-    // database: 'mongodb://cloudberry:cberry117@ds041851.mongolab.com:41851/cloudberry',
-    db: {
-        native_parser: true
-    },
-    server: {
-        poolSize: 5
-    }
-}))
 
 
+app.use(mongo({
+  // uri: 'mongodb://cloudberry:cberry117@ds041851.mongolab.com:41851/cloudberry', //or url
+  uri: 'mongodb://cloudberry:cberry117@ds011439.mlab.com:11439/pickem',
+
+  max: 100,
+  min: 1,
+  timeout: 30000,
+  log: false
+}));
 
 var users = {
-  'asmallco': {
-    'username': 'asmallco',
+  'adam': {
+    'username': 'adam',
     'scores': [92, 35, 112, 87, 79, 62, 79, 85, 53, 44, 72, 73, 95, 86, 125, 76, 99]
   },
-  'chris': {
-    'username': 'chris',
+  'a4hjlm': {
+    'username': 'a4hjlm',
     'scores': [98, 50, 120, 95, 75, 59, 75, 81, 40, 33, 64, 76, 104, 89, 122, 74, 86]
   },
   'christine': {
@@ -85,7 +75,7 @@ passport.use(new LocalStrategy(
   }
 ));
 passport.serializeUser(function(user, done) { 
-  console.log('serialized: ' + user.id)
+  // console.log('serialized: ' + user.id)
     done(null, user.id);
 });
 
@@ -125,21 +115,7 @@ app.use(function*(next) {
   if(this.req.url !== '/login'){
     if (this.isAuthenticated()) {
 
-// var User = mongoose.model('user');
-    var User = this.model('user');
-
-     User.findOne({ username: this.req.user.id }, function(err, user) {
-            if (err) { return done(err); }
-
-            if (!user) {
-                return done(null, false, { message: 'Incorrect username.' });
-            }
-            // if (!user.validPassword(password)) {
-            //   return done(null, false, { message: 'Incorrect password.' });
-            // }
-            console.log(user);
-            return done(null, user);
-        });
+      // console.log(yield this.mongo.db('cloudberry').collection('users').findOne({username: this.req.user.id}));
 
       yield next
     } else {
@@ -164,6 +140,7 @@ app.use(route.get('/logout', logout));
 function *season() {
   globalData.groups = globalData.groups.map(function(group){
     group.members = group.members.map(function(member){
+      // console.log(member);
       var temp = users[member];
       temp.total = temp.scores.reduce(function(pv, cv) {
         return pv + cv;
