@@ -24,24 +24,19 @@ app.keys = ['secret']
 const _ = require('lodash');
 const passport = require('koa-passport')
 
+app.use(serve('./assets'));
 app.use(parse());
 app.use(passport.initialize())
 app.use(passport.session())
 
 
 var user = function(){
-  // self = context;
   comparePassword = function *(candidatePassword, user) {  
     return yield bcrypt.compare(candidatePassword, user.password);
   };
 
   matchUser = function *(username, password) { 
-
-    // console.log(self);
-    // var user = yield this.findOne({ 'username': username.toLowerCase() }).exec();
-    // console.log('context: ' + this);
     var user = yield this.mongo.db('pickem').collection('users').findOne({username: username});
-    // console.log(user)
     if (!user) throw new Error('User not found');
 
     if (yield comparePassword(password, user))
@@ -49,11 +44,8 @@ var user = function(){
 
     throw new Error('Password does not match');
   };
-  getUser = function (_id, done){
-    return this.mongo.db('pickem').collection('users').findOne({username: _id});
-      // console.log('user'+ JSON.stringify(user))
-      // return user;
-
+  getUser = function *(_id) {
+    return yield this.mongo.db('pickem').collection('users').findOne({username: _id});
   }
   return {
     comparePassword: comparePassword.bind(this),
@@ -62,13 +54,6 @@ var user = function(){
   }
 }
 
-// var mongoContext= {mongo: null};
-// app.use(function *(next){
-//   // db = this.mongo;
-//   self = this;
-
-//   yield next;
-// })
 app.use(
   mongo({
     // uri: 'mongodb://cloudberry:cberry117@ds041851.mongolab.com:41851/cloudberry', //or url
@@ -81,29 +66,10 @@ app.use(
 );
 var myUser;
 app.use(function *(next){
-// console.log(yield this.mongo.db('pickem').collection('users').findOne({username: 'adam'}));
-
   myUser = user.call(this);
   yield next;
 })
-// var db = mongo({
-//   // uri: 'mongodb://cloudberry:cberry117@ds041851.mongolab.com:41851/cloudberry', //or url
-//   uri: 'mongodb://pickem:pickem117@ds011439.mlab.com:11439/pickem',
 
-//   max: 100,
-//   min: 1,
-//   timeout: 30000,
-//   log: false
-// });
-
-// var db;
-// app.use(function *(next){
-//   // db = this.mongo;
-//   self = this;
-
-//   yield next;
-// })
-// self = this;
 var users = {
   'adam': {
     'username': 'adam',
@@ -119,22 +85,18 @@ var users = {
   }
 
 }
+var teams =['Arizona', 'Atlanta', 'Baltimore', 'Buffalo', 'Carolina', 'Chicago', 'Cincinnati', 'Cleveland', 'Dallas', 'Denver', 'Detroit', 'Green Bay', 'Houston', 'Indianapolis', 'Jacksonville', 'Kansas City', 'Miami', 'Minnesota', 'New England', 'New Orleans', 'NY Giants', 'NY Jets', 'Oakland', 'Philadelphia', 'Pittsburgh', 'San Diego', 'San Francisco', 'Seattle', 'St. Louis', 'Tampa Bay', 'Tennessee', 'Washington'];
 var globalData = {};
 
-app.use(serve('./assets'));
 app.use(handlebars({
   cache: false,
   defaultLayout: "index"
 }));
 
 
-
-
-
 function AuthLocalUser(username, password, done) {
    co(function *(next) {
     try {
-      // console.log('user'+username);
       return yield myUser.matchUser(username, password);
     } catch (ex) {    
       console.log(ex)
@@ -143,62 +105,19 @@ function AuthLocalUser(username, password, done) {
   }).then(function(user){
     done(null, user);
   });
-  // console.log(temp);
-  //(done);
 };
 passport.use(new LocalStrategy(AuthLocalUser.bind(this)));
-// app.use(function *(next){
-//   // console.log(this.mongo)
-//   // yield new LocalStrategy(AuthLocalUser.bind(this))
-//   // console.log(yield this.mongo.db('pickem').collection('users').findOne({username: 'adam'}));
-//   yield next;
-// })
-
-// passport.use(new LocalStrategy(
-//   function (username, password, done) {
-//     if(typeof users[username] === 'undefined'){
-//       return done(null, false, { message: 'Incorrect username.' });
-//     }
-//     // User.findOne({ username: username }, function(err, user) {
-//     //     if (err) { return done(err); }
-
-//     //     if (!user) {
-//     //         return done(null, false, { message: 'Incorrect username.' });
-//     //     }
-//     //     // if (!user.validPassword(password)) {
-//     //     //   return done(null, false, { message: 'Incorrect password.' });
-//     //     // }
-//     //     return done(null, user);
-//     // });
-//     var user = this.mongo.db('pickem').collection('users').findOne();
-//                // this.mongo.db('pickem').collection('users')
-//     console.log(user);
-//     if (bcrypt.compare(password, user.password)) {
-//       return done(null, user);
-//     }
-//     return done(null, false, { message: 'Incorrect username.' });
-
-//   }.bind(app)
-//   )
-// );
-
-
 
 passport.serializeUser(function(user, done) { 
-  // console.log('serialized: ' + user._id)
     done(null, user.username);
 });
 
 passport.deserializeUser(function (id, done) {  
-          // done(null, {id: id});
-    var user = myUser.getUser(id, done);//this.mongo.db('pickem').collection('users').findOne({_id: id});
-    console.log('user:' +JSON.stringify(user))
-    
-    // User.findById(id, function(err, user) {
-        done(null, user);
-    // });
+  co(function *(){
+    var user = yield myUser.getUser(id, done);
+    done(null, user);
+  })
 });
-
 app.use(
   function *(next){
     var paths = yield fs.readdir('./data');
@@ -220,10 +139,8 @@ app.use(
 
 
 app.use(function *(next) {
-        // console.log(yield this.mongo.db('pickem').collection('users').findOne({username: 'adam'}));
   if(this.req.url !== '/login'){
     if (this.isAuthenticated()) {
-      // console.log(yield this.mongo.db('cloudberry').collection('users').findOne({username: this.req.user.id}));
       // var salt = yield bcrypt.genSalt(10)
       // var hash = yield bcrypt.hash('chmasa21', salt)
       // var result = yield this.mongo.db('pickem').collection('users').save({username: 'adam', password: hash})
@@ -242,6 +159,10 @@ app.use(route.get('/results/', results));
 app.use(route.get('/picks/:week', picker));
 app.use(route.get('/picks/', picker));
 
+
+app.use(route.get('/load', loadUser));
+
+
 app.use(route.get('/login', showLogin));
 app.use(route.post('/login', passport.authenticate('local', {
     successRedirect: '/',
@@ -249,10 +170,24 @@ app.use(route.post('/login', passport.authenticate('local', {
   })) );
 app.use(route.get('/logout', logout));
 
+function *loadUser() {
+  foreach(var u in users){
+    var user = users[u];
+    var currentUser = yield this.mongo.db('pickem').collection('users').findOne({username: user})
+    for(var i in globalData[user]){
+      yield this.mongo.db('pickem').collection('picks').save({
+        user: currentUser._id, 
+        game_id: globalData[user][i].id,
+        pick: globalData[user][i].pick,
+        points: globalData[user][i].points
+      })
+    }
+  }
+}
+
 function *season() {
   globalData.groups = globalData.groups.map(function(group){
     group.members = group.members.map(function(member){
-      // console.log(member);
       var temp = users[member];
       temp.total = temp.scores.reduce(function(pv, cv) {
         return pv + cv;

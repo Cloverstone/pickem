@@ -24,10 +24,18 @@ window.onload =function(){
 			fields: data 
 		}).on('change', function(){
 
-			$('.games span').removeClass('text-muted');
+			$('.games span').removeClass('text-success text-danger');
 			this.usedValues = _.values(_.mapValues(this.toJSON(), function(o) { return parseInt(o.points, 10); }));
 			this.usedValues.map(function(value){
-				$('.games #point'+value).addClass('text-muted');
+				if(!$('.games #point'+value).hasClass('text-danger')){
+				if($('.games #point'+value).hasClass('text-success')){
+					$('.games #point'+value).removeClass('text-success');
+					$('.games #point'+value).addClass('text-danger');
+				}else{
+					$('.games #point'+value).addClass('text-success');
+				}
+				}
+
 			});
 			if(!this.valid){
 				this.validate();	
