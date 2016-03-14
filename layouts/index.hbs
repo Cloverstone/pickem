@@ -30,16 +30,16 @@
 					<a href="/" class="navbar-brand">Pickem</a> 
 				</div> 
 				<nav id="bs-navbar" class="collapse navbar-collapse"> 
-					{{#user.id}}
+					{{#user._id}}
 					<ul class="nav navbar-nav"> 
 						<!-- <li class="active"> <a href="/">Home</a> </li>  -->
 						<li> <a href="/picks/"><i class="fa fa-check"></i> Picks</a> </li>
 						<li> <a href="/results/"><i class="fa fa-th-list"></i> Results</a> </li> 
 					</ul>
-					{{/user.id}}
+					{{/user._id}}
 					<ul class="nav navbar-nav navbar-right"> 
-						{{#user.id}}<li><a href="/logout" onclick="">Logout</a></li>{{/user.id}}
-						<li><a href="/account" onclick="">{{user.id}}{{^user.id}}Guest{{/user.id}}</a></li> 
+						{{#user._id}}<li><a href="/logout" onclick="">Logout</a></li>{{/user._id}}
+						<li><a href="/account" onclick="">{{user.username}}{{^user._id}}Guest{{/user._id}}</a></li> 
 					</ul> 
 				</nav> 
 			</div> 

@@ -9,6 +9,8 @@
   "author": "Adam Smallcomb",
   "license": "ISC",
   "dependencies": {
+    "co": "^4.6.0",
+    "co-bcrypt": "^1.0.0",
     "co-fs": "^1.2.0",
     "koa": "^1.1.2",
     "koa-bodyparser": "^2.0.1",
