@@ -32,6 +32,7 @@ body{
 
 .member{
   background: #c5c5c5;
+  background: linear-gradient( 0deg, #c4c4c4, #c8c8c8 );
   height:60px;
 }
 .member.active{background: #d8d8d8}
