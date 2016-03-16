@@ -36,10 +36,10 @@ body{
 }
 .member.active{background: #d8d8d8}
 .member span,.teams span{float:left;}
-.teams{height:34px;line-height: 34px}
+.teams{height:34px;line-height: 34px;background: #ccc;}
 .member .main{height: 60px;}
 .main span{position:absolute;}
-.main .total{bottom:2px;left:2px;}
+.main .total{bottom: -7px;color: #666;font-size: 32px;left:5px;font-family: digital, arial, verdana;}
 .main .username{top:2px;right:2px;font-weight:bold;}
 .main .wins{bottom:2px;right:2px;}
 .playerResult{display:inline-block;width:34px;text-align: center;font-size: 24px;line-height: 24px;color:#808080;}
@@ -50,6 +50,18 @@ body{
   border: solid 1px;
   border-color: #555 #111 #111 #555;
 }*/
+
+.panel-pickem.panel{
+  border:none;
+  border-radius: 0;
+  background: rgba(50,50,50,.8);
+
+}
+.panel-pickem .panel-heading{padding: 0;  color: #f8f8f8;}
+.panel-pickem .panel-heading a div{padding: 5px 15px;}
+.panel-pickem .panel-body{padding:0;background: #c5c5c5;}
+
+
 [data-type=gamePick] .btn:hover{
     border-color:#888;
 }

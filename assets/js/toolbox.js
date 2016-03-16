@@ -12,14 +12,19 @@ alert = function(value){ if(debug){console.log(value);} };
 
 window.onload =function(){
 			var n = [];
-			for(var i=1;i<=data.length;i++){
+			var min = 17-data.length;
+			var max = 16;
+
+			// var min = 1;
+			// var max = data.length;
+			for(var i=min;i<=max;i++){
 				n.push(i);
 			}
 			$('.games').html(templates['available'].render({values: n}));
 	if($('#form').length){
 		$('#form').berry({
 			actions:['save'],
-			default:{type: 'gamePick', min: 1, max: data.length, default:{label: 'Choose', value: 0}, required: true},
+			default:{type: 'gamePick', min: min, max: max, default:{label: 'Choose', value: 0}, required: true},
 			attributes: _.keyBy(picks, 'id'), 
 			fields: data 
 		}).on('change', function(){
@@ -53,7 +58,7 @@ templates['available'] = Hogan.compile(available, templates);
 var gamePick = `
 <div class="row clearfix {{modifiers}}" name="{{id}}" data-type="{{type}}" style="margin-bottom: 1px;padding:5px">
 	<div class="col-md-5" style="text-align:right">
-		<div class="btn btn-none" data-value="{{{away}}}" style="width: 200px;line-height: 20px;">{{{away}}}<span class="cube team-icon {{away}}" style="margin:-5px;float:right"></span></div>
+		<div class="btn btn-none" data-value="{{{away}}}" style="width: 200px;line-height: 20px;"><span class="awayteam">{{{away}}}</span><span class="cube team-icon {{away}}" style="margin:-5px;float:right"></span></div>
 	</div>
 	<div class="col-md-2" >
 	<select class="form-control"  name="{{id}}" {{^isEnabled}}readonly disabled="true"{{/isEnabled}}  {{#multiple_enable}}multiple{{/multiple_enable}} >
@@ -65,7 +70,7 @@ var gamePick = `
 	</select>
 	</div>
 	<div class="col-md-5" style="text-align:left">
-		<div class="btn btn-none" data-value="{{{home}}}" style="width: 200px;line-height: 20px;"><span class="cube team-icon {{home}}" style="margin:-5px;float:left"></span>{{{home}}}</div>
+		<div class="btn btn-none" data-value="{{{home}}}" style="width: 200px;line-height: 20px;"><span class="cube team-icon {{home}}" style="margin:-5px;float:left"></span><span class="hometeam">{{{home}}}</span></div>
 	</div>
 </div>`;
 

@@ -1,16 +1,28 @@
-<div>
+<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
 	{{#groups}}
-	<div>
-		<div>{{name}}</div>
-		{{#members}}
-		<div>
-		<span class="main">{{username}}</span>
-			{{#scores}}
-				<span class="score cube">{{.}}</span>
-			{{/scores}}
-				<span class="total">{{total}}</span>
-			</div>
-		{{/members}}
-	</div>
+  <div class="panel panel-pickem">
+    <div class="panel-heading" role="tab" id="heading{{name}}">
+      <h4 class="panel-title">
+        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#{{name}}" aria-expanded="true" aria-controls="{{name}}">
+          <div>{{name}}</div>
+        </a>
+      </h4>
+    </div>
+    <div id="{{name}}" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading{{name}}">
+      <div class="panel-body">
+      	<table class="table table-striped" style="margin-bottom: 0;">
+				{{#members}}
+				<tr>
+					<td style="width:100px;text-align:right">{{username}}</td>
+					{{#scores}}
+						<td>{{.}}</td>
+					{{/scores}}
+					<td>{{total}}</td>
+				</tr>
+				{{/members}}
+				</table>
+      </div>
+    </div>
+  </div>
 	{{/groups}}
 </div>

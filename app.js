@@ -171,7 +171,7 @@ app.use(route.post('/login', passport.authenticate('local', {
 app.use(route.get('/logout', logout));
 
 function *loadUser() {
-  foreach(var u in users){
+  for(var u in users){
     var user = users[u];
     var currentUser = yield this.mongo.db('pickem').collection('users').findOne({username: user})
     for(var i in globalData[user]){
