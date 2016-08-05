@@ -157,11 +157,12 @@ app.use(route.get('/', season));
 app.use(route.get('/results/:week', results));
 app.use(route.get('/results/', results));
 app.use(route.get('/picks/:week', picker));
-app.use(route.post('/picks/:week', picker_save));
+// app.use(route.post('/picks/:week', picker_save));
 app.use(route.get('/picks/', picker));
 
 
-app.use(route.get('/load:year', loadUser));
+app.use(route.get('/load/:year', loadUser));
+app.use(route.get('/loadall/:year', loadall));
 
 
 app.use(route.get('/login', showLogin));
@@ -176,7 +177,7 @@ function *loadUser(year) {
     var user = users[u];
     var currentUser = yield this.mongo.db('pickem').collection('users').findOne({username: user})
     for(var i in globalData[user]){
-      yield this.mongo.db('pickem').collection('picks').save({
+      yield this.mongo.db('pickem').collection('pickems').save({
         user: currentUser._id, 
         game_id: globalData[user][i].id,
         pick: globalData[user][i].pick,
@@ -185,6 +186,31 @@ function *loadUser(year) {
       })
     }
   }
+}
+function *loadall(year) {
+  // yield globalData;
+  this.body = globalData;
+  for(var g in globalData.schedule){
+
+  //   console.log(globalData.schedule[g].home);
+  // }
+  console.log(_.pick(globalData.schedule[0], 'home', 'away'));
+  // for(var u in users){
+  //   var user = users[u];
+  //   var currentUser = yield this.mongo.db('pickem').collection('users').findOne({username: user})
+  //   for(var i in globalData[user]){
+  //     yield this.mongo.db('pickem').collection('pickems').save({
+  //       user: currentUser._id, 
+  //       game_id: globalData[user][i].id,
+  //       pick: globalData[user][i].pick,
+  //       points: globalData[user][i].points,
+  //       season: year
+  //     })
+  //   }
+  // }
+
+
+
 }
 
 function *season() {
@@ -258,7 +284,7 @@ function *picker(week) {
     return game.id;
   })
 
-  var picks = yield this.mongo.db('pickem').collection('picks').find({user: this.req.user._id, game_id: {$in: ids} }).toArray();
+  var picks = yield this.mongo.db('pickem').collection('pickems').find({user: this.req.user._id, game_id: {$in: ids} }).toArray();
 
   picks =_.map(picks, function(pick){
     return {id: pick.game_id, pick: pick.pick, points: pick.points};
