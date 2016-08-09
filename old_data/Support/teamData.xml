@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<teams>
+	<team name="Tennessee" record=""/>
+	<team name="Pittsburgh" record=""/>
+	<team name="Miami" record=""/>
+	<team name="Atlanta" record=""/>
+	<team name="Denver" record=""/>
+	<team name="Cincinnati" record=""/>
+	<team name="Minnesota" record=""/>
+	<team name="Cleveland" record=""/>
+	<team name="Jacksonville" record=""/>
+	<team name="Indianapolis" record=""/>
+	<team name="Detroit" record=""/>
+	<team name="New Orleans" record=""/>
+	<team name="Dallas" record=""/>
+	<team name="Tampa Bay" record=""/>
+	<team name="Philadelphia" record=""/>
+	<team name="Carolina" record=""/>
+	<team name="Kansas City" record=""/>
+	<team name="Baltimore" record=""/>
+	<team name="NY Jets" record=""/>
+	<team name="Houston" record=""/>
+	<team name="Washington" record=""/>
+	<team name="NY Giants" record=""/>
+	<team name="San Francisco" record=""/>
+	<team name="Arizona" record=""/>
+	<team name="St. Louis" record=""/>
+	<team name="Seattle" record=""/>
+	<team name="Chicago" record=""/>
+	<team name="Green Bay" record=""/>
+	<team name="Buffalo" record=""/>
+	<team name="New England" record=""/>
+	<team name="San Diego" record=""/>
+	<team name="Oakland" record=""/>
+</teams>

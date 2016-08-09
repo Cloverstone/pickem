@@ -22,6 +22,9 @@ window.onload =function(){
 		n.push(i);
 	}
 	$('.games').html(templates['available'].render({values: n}));
+	
+	_.map(data, function(datum){datum.id = datum._id;return datum;})
+	
 	if($('#form').length){
 		$('#form').berry({
 			actions:['save'],
@@ -60,7 +63,7 @@ templates['available'] = Hogan.compile(available, templates);
 var gamePick = `
 <div class="row clearfix {{modifiers}}" name="{{id}}" data-type="{{type}}" style="margin-bottom: 1px;padding:5px">
 	<div class="col-md-5 col-xs-4" style="text-align:right">
-		<div class="btn btn-none" data-value="{{{away}}}" style="width: 200px;line-height: 20px;"><span class="awayteam hidden-xs">{{{away}}}</span><span class="cube team-icon {{away}}" style="margin:-5px;float:right"></span></div>
+		<div class="btn btn-none" data-value="{{{away._id}}}" style="width: 200px;line-height: 20px;"><span class="awayteam hidden-xs">{{{away.name}}}</span><span class="cube team-icon {{away.name}} {{away.location}}" style="margin:-5px;float:right"></span></div>
 	</div>
 	<div class="col-md-2 col-xs-4" >
 	<select class="form-control"  name="{{id}}" {{^isEnabled}}readonly disabled="true"{{/isEnabled}}  {{#multiple_enable}}multiple{{/multiple_enable}} >
@@ -72,7 +75,7 @@ var gamePick = `
 	</select>
 	</div>
 	<div class="col-md-5 col-xs-4" style="text-align:left">
-		<div class="btn btn-none" data-value="{{{home}}}" style="width: 200px;line-height: 20px;"><span class="cube team-icon {{home}}" style="margin:-5px;float:left"></span><span class="hometeam hidden-xs">{{{home}}}</span></div>
+		<div class="btn btn-none" data-value="{{{home._id}}}" style="width: 200px;line-height: 20px;"><span class="cube team-icon {{home.name}}  {{home.location}}" style="margin:-5px;float:left"></span><span class="hometeam hidden-xs">{{{home.name}}}</span></div>
 	</div>
 </div>`;
 

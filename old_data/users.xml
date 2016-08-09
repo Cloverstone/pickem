@@ -1,0 +1,126 @@
+<?xml version="1.0"?>
+<users>
+  <user username="adam" name="Adam Smallcomb">
+    <membership>
+      <football team="niners" rank="true">
+        <league name="us"/>
+        <league name="Smallcombs"/>
+        <league name="Verify"/>
+      </football>
+    </membership>
+  </user>
+  <user username="chris" password="adam21" name="Christine Smallcomb">
+    <membership>
+      <football team="niners" rank="true">
+        <league name="us"/>
+        <league name="Smallcombs"/>
+        <league name="All"/>
+      </football>
+    </membership>
+  </user>
+  <user username="brad" password="bianca" name="Brad Smallcomb">
+    <membership>
+      <football team="niners" rank="true">
+        <league name="Smallcombs"/>
+        <league name="BS"/>
+        <league name="All"/>
+      </football>
+    </membership>
+  </user>
+  <user username="sarah" password="bianca" name="Sarah Smallcomb">
+    <membership>
+      <football team="niners" rank="true">
+        <league name="BS"/>
+        <league name="Smallcombs"/>
+        <league name="All"/>
+      </football>
+    </membership>
+  </user>
+  <user username="ArkLaAnni" password="ArkLaAnni" name="ArkLaAnni">
+    <membership>
+      <football team="" rank="true">
+        <league name="BS"/>
+        <league name="All"/>
+      </football>
+    </membership>
+  </user>
+  <user username="mike" password="mike117" name="Michael Smallcomb">
+    <membership>
+      <football team="niners" rank="true">
+        <league name="Smallcombs"/>
+        <league name="Verify"/>
+      </football>
+    </membership>
+  </user>
+  <user username="luke" password="lucas" name="Luke Smallcomb">
+    <membership>
+      <football team="niners" rank="true">
+        <league name="Smallcombs"/>
+	<league name="All"/>
+      </football>
+    </membership>
+  </user>
+  <user username="christine" password="mike" name="Christine E Smallcomb">
+    <membership>
+      <football team="niners" rank="true">
+        <league name="Super Heros"/>
+	<league name="Smallcombs"/>
+	<league name="All"/>
+	</football>
+    </membership>
+  </user>
+  <user username="batman" password="robin" name="Mike">
+    <membership>
+      <football team="niners" rank="true">
+        <league name="Super Heros"/>
+        <league name="Smallcombs"/>
+        <league name="All"/>
+      </football>
+    </membership>
+  </user>
+  <user username="jeff" password="jscott" name="Jeff">
+    <membership>
+      <football team="niners" rank="true">
+        <league name="Scotts"/>
+        <league name="Smallcombs"/>
+      </football>
+    </membership>
+  </user>
+  <user username="casey" password="cscott" name="Casey">
+    <membership>
+      <football team="niners" rank="true">
+        <league name="Scotts"/>
+        <league name="All"/>
+      </football>
+    </membership>
+  </user>
+  <user username="conley" password="conley" name="Conley">
+    <membership>
+      <football team="niners" rank="true">
+        <league name="Rats Laugh"/>
+      </football>
+    </membership>
+  </user>
+  <user username="verlyn" password="verlyn" name="Verlyn">
+    <membership>
+      <football team="niners" rank="true">
+        <league name="Rats Laugh"/>
+      </football>
+    </membership>
+  </user>
+  <user username="miker" password="lucy" name="Mike Saxton">
+    <membership>
+      <football team="niners" rank="false">
+        <league name="Saxtons"/>
+      </football>
+    </membership>
+  </user>
+  <user username="LuAnn" password="desi" name="LuAnn Saxton">
+    <membership>
+      <football team="niners" rank="false">
+        <league name="Saxtons"/>
+      </football>
+    </membership>
+  </user>
+  <user username="guest" password="guest" name="Guest"/>
+</users>

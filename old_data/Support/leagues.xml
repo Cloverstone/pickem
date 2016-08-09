@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<leagues>
+<league name="us" rank="true">
+	<member name="adam" role="admin"/>
+	<member name="chris" role="user"/>
+</league>
+<league name="Smallcombs" rank="true">
+	<member name="adam" role="admin"/>
+	<member name="brad" role="user"/>
+	<member name="sarah" role="user"/>
+	<member name="luke" role="user"/>
+	<member name="mike" role="user"/>
+	<member name="christine" role="user"/>
+	<member name="batman" role="user"/>
+	<member name="chris" role="user"/>
+</league>
+<league name="BS" rank="true">
+	<member name="brad" role="user"/>
+	<member name="sarah" role="user"/>
+	<member name="ArkLaAnni" role="user"/>
+</league>
+
+<league name="Super Heros" rank="true">
+	<member name="batman" role="admin"/>
+	<member name="christine" role="user"/>
+</league>
+
+<league name="Rats Laugh" rank="true">
+	<member name="verlyn" role="admin"/>
+	<member name="conley" role="user"/>
+</league>
+
+<league name="Saxtons" rank="false">
+	<member name="miker" role="admin"/>
+	<member name="LuAnn" role="user"/>
+</league>
+<league name="Scotts" rank="true">
+	<member name="jeff" role="admin"/>
+	<member name="casey" role="user"/>
+</league>
+
+<league name="All" rank="true">
+	<member name="adam" role="admin"/>
+	<member name="brad" role="user"/>
+	<member name="sarah" role="user"/>
+	<member name="chris" role="user"/>
+	<member name="luke" role="user"/>
+	<member name="mike" role="user"/>
+	<member name="christine" role="user"/>
+	<member name="batman" role="user"/>
+	<member name="verlyn" role="user"/>
+	<member name="conley" role="user"/>
+</league>
+<league name="Verify" rank="true">
+	<member name="adam" role="admin"/>
+	<member name="chris" role="user"/>
+	<member name="luke" role="user"/>
+	<member name="mike" role="user"/>
+	<member name="christine" role="user"/>
+	<member name="batman" role="user"/>
+	<member name="verlyn" role="user"/>
+	<member name="conley" role="user"/>
+	<member name="miker" role="user"/>
+	<member name="LuAnn" role="user"/>
+	<member name="brad" role="user"/>
+ 	<member name="sarah" role="user"/>
+        <member name="jeff" role="user"/>
+        <member name="casey" role="user"/>
+	<member name="ArkLaAnni" role="user"/>
+</league>
+</leagues>
