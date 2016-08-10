@@ -3,13 +3,13 @@
 	<div class="clearfix teams">
 		<span class="main">Away</span>
 		{{#games}}
-			<span class="{{#awaywin}} correct{{/awaywin}}"><span class="cube team-icon {{away}}"></span></span>
+			<span class="{{#awaywin}} correct{{/awaywin}}"><span class="cube team-icon {{away.name}} {{away.location}}"></span></span>
 		{{/games}}
 	</div>
 	<div class="clearfix teams">
 		<span class="main">Home</span>
 		{{#games}}
-			<span class="{{#homewin}} correct{{/homewin}}"><span class="cube team-icon {{home}}"></span></span>
+			<span class="{{#homewin}} correct{{/homewin}}"><span class="cube team-icon {{home.name}} {{home.location}}"></span></span>
 		{{/games}}
 	</div>
 
