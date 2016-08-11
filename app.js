@@ -302,19 +302,31 @@ function *results(week) {
   var user = this.req.user.username;
   // var games = yield this.mongo.db('pickem').collection('games').find({week: week }).toArray();
 
-  globalData.groups = _.map(globalData.groups, _.bind(function(group){
-
-    group.members = _.map(group.members, _.bind(function(member){
+  // globalData.groups = _.map(globalData.groups, _.bind(function(group){
+ for(var g in globalData.groups){
+  group = globalData.groups[g];
+    for(var m in group.members){
+      member = group.members[m];
+    // }
+    // group.members = _.map(group.members, _.bind(function(member){
       var temp = users[member];
-      console.log(week)
-      temp.games = this.mongo.db('pickem').collection('games').find({username: member,week: week }).toArray();
-      console.log(temp.games);
+
+      var user = yield this.mongo.db('pickem').collection('users').findOne({username: member });
+
+      temp.games = yield this.mongo.db('pickem').collection('picks').find({user_id: user._id, game_id: {$in: ids} }).toArray();
+      // console.log(temp.games);
       // temp.games = _.filter(temp.games, function(game){
       //   return (ids.indexOf(game.id) >=0);
       // })
 
+  for(var game in temp.games){
+    temp.games[game].pick = yield this.mongo.db('pickem').collection('teams').findOne({_id: temp.games[game].pick });
+
+
+  }
       temp.games = _.map(temp.games, function(game){
-        game.winner = (_.find(games, {_id: game._id}).winner === game.pick);
+
+        game.winner = (_.find(games, {_id: game.game_id}).winner === game.pick);
         return game;
       })
 
@@ -334,14 +346,17 @@ function *results(week) {
         return pv;
       }, 0);
 
-      return temp;
-    }, this))
+      // return temp;
+      group.members[m] = temp;
+    // }, this))
+    }
     group.members = _.sortBy(group.members, function(o) { return o.total; }).reverse();
-    return group;
-  }, this))
+    globalData.groups[g] = group;
+  }
+  // }, this))
   globalData.games = games;
-  this.body = globalData.groups;
-  // yield this.render("results", _.extend({user: this.req.user}, globalData));
+  // this.body = globalData.groups;
+  yield this.render("results", _.extend({user: this.req.user}, globalData));
 }
 
 function *picker(week) {
