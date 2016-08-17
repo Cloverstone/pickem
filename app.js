@@ -11,6 +11,7 @@ const handlebars = require("koa-handlebars");
 const serve = require('koa-static-folder');
 const bcrypt = require('co-bcrypt');
 var LocalStrategy = require('passport-local').Strategy;
+var ObjectId = require('mongodb').ObjectID;
 // var mongoose = require('koa-mongoose')
 var mongo = require('koa-mongo');
 
@@ -132,7 +133,7 @@ app.use(
       globalData.weeks.push({week:i});
     }
     globalData.groups = yield this.mongo.db('pickem').collection('groups').find().toArray();
-
+    teams =  yield this.mongo.db('pickem').collection('teams').find().toArray();
     yield next;
   }
 )
@@ -158,7 +159,7 @@ app.use(route.get('/', season));
 app.use(route.get('/results/:week', results));
 app.use(route.get('/results/', results));
 app.use(route.get('/picks/:week', picker));
-// app.use(route.post('/picks/:week', picker_save));
+app.use(route.post('/picks/:week', pickem));
 app.use(route.get('/picks/', picker));
 
 
@@ -199,6 +200,10 @@ function *getTeam(team){
     }
   }
     return team;
+}
+function *teamFromID(_id){
+  return _.find(teams , {_id :_id});
+      // return yield this.mongo.db('pickem').collection('teams').findOne({_id: _id });
 }
 
 
@@ -251,9 +256,10 @@ function *loadall(year) {
       yield this.mongo.db('pickem').collection('picks').save(pick);
     }
   }
-
 }
 
+
+/*Route Handlers*/
 function *season() {
 
   globalData.groups = globalData.groups.map(function(group){
@@ -273,60 +279,37 @@ function *results(week) {
   if(typeof week === 'object')week = '1';
   globalData.weeks[parseInt(week, 10)-1].current = true;
   var games = yield this.mongo.db('pickem').collection('games').find({week: week }).toArray();
-  // games = _.map(games, _.bind(function(game){
-  //   game.homewin = (game.winner == game.home);
-  //   game.awaywin = (game.winner == game.away);
-        
-  //   game.home =  this.mongo.db('pickem').collection('teams').findOne({_id: game.away});
-  //   game.away =  this.mongo.db('pickem').collection('teams').findOne({_id: game.home});
-  //   return game;
-  // }, this))
   for(var game in games){
     games[game].homewin = (games[game].winner == games[game].home);
     games[game].awaywin = (games[game].winner == games[game].away);
-
-    games[game].home = yield this.mongo.db('pickem').collection('teams').findOne({_id: games[game].home });
-    games[game].away = yield this.mongo.db('pickem').collection('teams').findOne({_id: games[game].away });
-    // games[game].winner = yield this.mongo.db('pickem').collection('teams').findOne({_id: games[game].winner });
-
-
+    games[game].home = yield teamFromID.call(this,games[game].home);
+    games[game].away = yield teamFromID.call(this,games[game].away);
   }
-  // var games = _.filter(globalData.schedule, {'week': week}).map(function(game){
-  //   game.homewin = (game.winner == game.home);
-  //   game.awaywin = (game.winner == game.away);
-  //   return game;
-  // })
+  globalData.source = games;
+
   var ids = games.map(function(game){
     return game._id;
   })
   var user = this.req.user.username;
-  // var games = yield this.mongo.db('pickem').collection('games').find({week: week }).toArray();
-
-  // globalData.groups = _.map(globalData.groups, _.bind(function(group){
- for(var g in globalData.groups){
-  group = globalData.groups[g];
+  userReuse = {};
+  for(var g in globalData.groups){
+    group = globalData.groups[g];
     for(var m in group.members){
       member = group.members[m];
-    // }
-    // group.members = _.map(group.members, _.bind(function(member){
+
       var temp = users[member];
+      if(typeof userReuse[member] == 'undefined'){
+        userReuse[member] = yield this.mongo.db('pickem').collection('users').findOne({username: member });
+      }
 
-      var user = yield this.mongo.db('pickem').collection('users').findOne({username: member });
+      temp.games = yield this.mongo.db('pickem').collection('picks').find({user_id: userReuse[member]._id, game_id: {$in: ids} }).toArray();
 
-      temp.games = yield this.mongo.db('pickem').collection('picks').find({user_id: user._id, game_id: {$in: ids} }).toArray();
-      // console.log(temp.games);
-      // temp.games = _.filter(temp.games, function(game){
-      //   return (ids.indexOf(game.id) >=0);
-      // })
-
-  for(var game in temp.games){
-    temp.games[game].pick = yield this.mongo.db('pickem').collection('teams').findOne({_id: temp.games[game].pick });
-
-
-  }
+      for(var game in temp.games){
+        temp.games[game].pick = yield teamFromID.call(this,temp.games[game].pick);
+      }
       temp.games = _.map(temp.games, function(game){
 
-        game.winner = (_.find(games, {_id: game.game_id}).winner === game.pick);
+        game.winner = (_.find(games, {_id: game.game_id}).winner === game.pick._id);
         return game;
       })
 
@@ -346,16 +329,12 @@ function *results(week) {
         return pv;
       }, 0);
 
-      // return temp;
       group.members[m] = temp;
-    // }, this))
     }
     group.members = _.sortBy(group.members, function(o) { return o.total; }).reverse();
     globalData.groups[g] = group;
   }
-  // }, this))
   globalData.games = games;
-  // this.body = globalData.groups;
   yield this.render("results", _.extend({user: this.req.user}, globalData));
 }
 
@@ -366,9 +345,14 @@ function *picker(week) {
 
   var games = yield this.mongo.db('pickem').collection('games').find({week: week }).toArray();
   for(var game in games){
-    games[game].home = yield this.mongo.db('pickem').collection('teams').findOne({_id: games[game].home });
-    games[game].away = yield this.mongo.db('pickem').collection('teams').findOne({_id: games[game].away });
-    games[game].winner = yield this.mongo.db('pickem').collection('teams').findOne({_id: games[game].winner });
+
+    games[game].home = yield teamFromID.call(this,games[game].home);
+    games[game].away = yield teamFromID.call(this,games[game].away);
+    games[game].winner = yield teamFromID.call(this,games[game].winner);
+
+    // games[game].home = yield this.mongo.db('pickem').collection('teams').findOne({_id: games[game].home });
+    // games[game].away = yield this.mongo.db('pickem').collection('teams').findOne({_id: games[game].away });
+    // games[game].winner = yield this.mongo.db('pickem').collection('teams').findOne({_id: games[game].winner });
 
   }
   var ids = _.map(games, '_id')
@@ -386,6 +370,28 @@ function *picker(week) {
   globalData.games = JSON.stringify(games);
   globalData.picks = JSON.stringify(picks);
   yield this.render("picks", _.extend({user: this.req.user}, globalData));
+}
+
+function *pickem(week){
+    // console.log(this.request.body);
+
+this.body = this.request.body;
+var changed = this.request.body.changed;
+for(var i in changed){
+
+  var old =  yield this.mongo.db('pickem').collection('picks').findOne({game_id: ObjectId(changed[i].id), user_id: this.req.user._id });
+  console.log(old);
+
+    changed[i].game_id = ObjectId(changed[i].id) ;
+    changed[i].user_id = this.req.user._id;
+  if(old !== null){
+    changed[i]._id = old._id;
+  }
+  console.log(changed[i]);
+  this.mongo.db('pickem').collection('picks').save(changed[i]);
+
+}
+
 }
 
 function *showLogin(week) {

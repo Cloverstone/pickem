@@ -39,7 +39,6 @@
 		setValue: function(value) {
 			this.value = value;
 			this.$el.val(value.points)
-			debugger;
 			this.self.find('[data-value="'+value.pick+'"]').click();
 		},
 		displayAs: function() {

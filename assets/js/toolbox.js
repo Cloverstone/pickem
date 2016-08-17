@@ -21,7 +21,7 @@ window.onload =function(){
 	for(var i=min;i<=max;i++){
 		n.push(i);
 	}
-	$('.games').html(templates['available'].render({values: n}));
+	$('.games').html(templates['available'].render({percent: 100/((max-min)+1),values: n}));
 	
 	_.map(data, function(datum){datum.id = datum._id;return datum;})
 	
@@ -50,13 +50,26 @@ window.onload =function(){
 				this.validate();	
 			}
 		}).on('save', function(){
-			console.log(_.values(this.toJSON(null, true)))
+			debugger;
+			result = this.toJSON(null, true);
+
+
+			changed = _.filter(result,function(item){return !_.isEqual(_.find(picks, {id: item.id}) || {}, item);});
+			// console.log(_.values(this.toJSON(null, true)))
+			// $.post('/picks/1', changed);
+			$.ajax({
+  				type: "POST",
+				  url: '/picks/1',
+				  data: {changed:changed},
+				  // success: success,
+				  // dataType: dataType
+				});
 		}).trigger('change');
 	}
 }
 
 
-var available = `<div>{{#values}}<span class="cube" id="point{{.}}">{{.}}</span>{{/values}}</div>`;
+var available = `<div>{{#values}}<span class="cube" style="width:{{percent}}%" id="point{{.}}">{{.}}</span>{{/values}}</div>`;
 templates['available'] = Hogan.compile(available, templates);
 
 
