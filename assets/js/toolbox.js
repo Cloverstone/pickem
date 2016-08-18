@@ -50,20 +50,25 @@ window.onload =function(){
 				this.validate();	
 			}
 		}).on('save', function(){
-			debugger;
-			result = this.toJSON(null, true);
+			// debugger;
+			var proceed = this.validate();
+			if(!this.valid){
+				proceed = confirm("You have some errors in your picks are you sure you want to proceed?")
+			}
+			if(proceed){
+				result = this.toJSON(null, true);
 
 
-			changed = _.filter(result,function(item){return !_.isEqual(_.find(picks, {id: item.id}) || {}, item);});
-			// console.log(_.values(this.toJSON(null, true)))
-			// $.post('/picks/1', changed);
-			$.ajax({
-  				type: "POST",
-				  url: '/picks/1',
-				  data: {changed:changed},
-				  // success: success,
-				  // dataType: dataType
-				});
+				changed = _.filter(result,function(item){return !_.isEqual(_.find(picks, {id: item.id}) || {}, item);});
+
+				$.ajax({
+	  				type: "POST",
+					  url: '/picks/1',
+					  data: {changed:changed},
+					  // success: success,
+					  // dataType: dataType
+					});
+			}
 		}).trigger('change');
 	}
 }
@@ -76,7 +81,7 @@ templates['available'] = Hogan.compile(available, templates);
 var gamePick = `
 <div class="row clearfix {{modifiers}}" name="{{id}}" data-type="{{type}}" style="margin-bottom: 1px;padding:5px">
 	<div class="col-md-5 col-xs-4" style="text-align:right">
-		<div class="btn btn-none" data-value="{{{away._id}}}" style="width: 200px;line-height: 20px;"><span class="awayteam hidden-xs">{{{away.name}}}</span><span class="cube team-icon {{away.name}} {{away.location}}" style="margin:-5px;float:right"></span></div>
+		<div class="btn btn-none btn-team" data-value="{{{away._id}}}"><span class="awayteam hidden-xs">{{{away.name}}}</span><span class="cube team-icon {{away.name}} {{away.location}}" style="margin:-5px;float:right"></span></div>
 	</div>
 	<div class="col-md-2 col-xs-4" >
 	<select class="form-control"  name="{{id}}" {{^isEnabled}}readonly disabled="true"{{/isEnabled}}  {{#multiple_enable}}multiple{{/multiple_enable}} >
@@ -88,7 +93,7 @@ var gamePick = `
 	</select>
 	</div>
 	<div class="col-md-5 col-xs-4" style="text-align:left">
-		<div class="btn btn-none" data-value="{{{home._id}}}" style="width: 200px;line-height: 20px;"><span class="cube team-icon {{home.name}}  {{home.location}}" style="margin:-5px;float:left"></span><span class="hometeam hidden-xs">{{{home.name}}}</span></div>
+		<div class="btn btn-none btn-team" data-value="{{{home._id}}}"><span class="cube team-icon {{home.name}}  {{home.location}}" style="margin:-5px;float:left"></span><span class="hometeam hidden-xs">{{{home.name}}}</span></div>
 	</div>
 </div>`;
 

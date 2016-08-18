@@ -125,4 +125,11 @@ body{
 .Indianapolis { background-position: -120px -90px; }
 .Carolina { background-position: -150px -90px; }
 .Buffalo { background-position: -180px -90px; }
-.Atlanta { background-position: -210px -90px; 
+.Atlanta { background-position: -210px -90px; }
+
+.btn-team{width: 200px;line-height: 20px;}
+@media (max-width: 767px){
+.btn-team {
+    width: 50px;
+}
+}
