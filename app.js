@@ -520,7 +520,7 @@ function *logout(week) {
 
 // listen
 
-app.listen(3000);
+app.listen(process.env.PORT || 3000);
 console.log('listening on port 3000');
 
 //http://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?calendartype=blacklist&limit=100&dates=2016&seasontype=2&week=2
