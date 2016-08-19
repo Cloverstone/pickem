@@ -130,7 +130,7 @@ app.use(
     //  globalData[content.name] = JSON.parse(content.content);
     // })
     globalData.weeks = [];
-    for(var i = 1;i<=17;i++ ){
+    for(var i = 1;i<17;i++ ){
       globalData.weeks.push({week:i});
     }
     globalData.groups = yield this.mongo.db('pickem').collection('groups').find().toArray();
