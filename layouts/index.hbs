@@ -9,6 +9,8 @@
 		<title>Pickem</title>
 		<link rel='stylesheet' type='text/css' href='//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css'>
 		<link rel='stylesheet' type='text/css' href='//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css'>
+		<link rel='stylesheet' type='text/css' href='//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css'>
+
 		<link rel='stylesheet' type='text/css' href='/assets/css/pickem.css'>
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -18,14 +20,12 @@
     <![endif]-->
   </head>
   <body>
-		<header class="navbar navbar-static-top bs-docs-nav" id="top" role="banner"> 
+		<header class="navbar navbar-fixed-top bs-docs-nav" id="top" role="banner"> 
 			<div class="container"> 
 				<div class="navbar-header"> 
-					<button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false"> 
+					<button class="navbar-toggle collapsed" style="margin-bottom: 0px;margin-top: 3px;" type="button" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false"> 
 						<span class="sr-only">Toggle navigation</span> 
-						<span class="icon-bar"></span> 
-						<span class="icon-bar"></span> 
-						<span class="icon-bar"></span> 
+						<span class="fa-navicon fa fa-lg" style="color:#ccc"></span>
 					</button> 
 					<a href="/" class="navbar-brand">Pickem</a> 
 				</div> 
@@ -44,6 +44,7 @@
 				</nav> 
 			</div> 
 		</header>    
+		
 		<div class="container" id="container">
     	{{{@body}}}
     </div><!-- /.container -->
@@ -54,6 +55,8 @@
 		<script type='text/javascript' src='//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js'></script>
 		<script type='text/javascript' src="//cdnjs.cloudflare.com/ajax/libs/jStorage/0.4.4/jstorage.min.js"></script>
 		<script type='text/javascript' src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/4.6.0/lodash.min.js"></script>
+		<script type='text/javascript' src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+
 		<script type="text/javascript" src="/assets/js/full.berry.min.js"></script>
 		<script type="text/javascript" src="/assets/js/bootstrap.full.berry.js"></script>
 		<script type="text/javascript" src="/assets/js/berry_gamePick.js"></script>

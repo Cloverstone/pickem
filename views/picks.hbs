@@ -1,9 +1,11 @@
 <div>
-	{{>weeks}}
+	{{!>weeks}}
 	<div class="games"></div>
 	<div id="form"></div>
 	<script>
 	data = {{{games}}};
 	picks = {{{picks}}};
+	week = {{week}};
 	</script>
+	<script type="text/javascript" src="/assets/js/picks.js"></script>
 </div>

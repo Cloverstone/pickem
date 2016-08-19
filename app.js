@@ -14,6 +14,8 @@ var LocalStrategy = require('passport-local').Strategy;
 var ObjectId = require('mongodb').ObjectID;
 // var mongoose = require('koa-mongoose')
 var mongo = require('koa-mongo');
+var req = require('request');
+
 
 // const convert = require('koa-convert') // necessary until koa-generic-session has been updated to support koa@2 
 const session = require('koa-generic-session')
@@ -45,8 +47,8 @@ var user = function(){
 
     throw new Error('Password does not match');
   };
-  getUser = function *(_id) {
-    return yield this.mongo.db('pickem').collection('users').findOne({username: _id});
+  getUser = function *(username) {
+    return yield this.mongo.db('pickem').collection('users').findOne({username: username});
   }
   return {
     comparePassword: comparePassword.bind(this),
@@ -142,10 +144,6 @@ app.use(
 app.use(function *(next) {
   if(this.req.url !== '/login'){
     if (this.isAuthenticated()) {
-      // var salt = yield bcrypt.genSalt(10)
-      // var hash = yield bcrypt.hash('chmasa21', salt)
-      // var result = yield this.mongo.db('pickem').collection('users').save({username: 'adam', password: hash})
-
 
       yield next
     } else {
@@ -164,6 +162,10 @@ app.use(route.get('/picks/', picker));
 
 app.use(route.get('/load/:year', loadUser));
 app.use(route.get('/loadall/:year', newLoadall));
+app.use(route.get('/account', account));
+app.use(route.post('/account', accountUpdate));
+app.use(route.post('/password', passwordUpdate));
+
 
 
 app.use(route.get('/login', showLogin));
@@ -201,6 +203,7 @@ function *getTeam(team){
     return team;
 }
 function *teamFromID(_id){
+
   return _.find(teams , {_id :_id});
       // return yield this.mongo.db('pickem').collection('teams').findOne({_id: _id });
 }
@@ -210,14 +213,14 @@ function *newLoadall(year) {
   // console.log(globalData.schedule.length);
 
   // load teams
- globalData["2015week1"] = JSON.parse(yield fs.readFile('old_data/original/' + year + 'week1.json', 'utf8'));
-  for(var g in globalData["2015week1"].events){
-    globalData["2015week1"].events[g].competitions[0].competitors[0].team._id =globalData["2015week1"].events[g].competitions[0].competitors[0].team.id;
-    globalData["2015week1"].events[g].competitions[0].competitors[1].team._id =globalData["2015week1"].events[g].competitions[0].competitors[1].team.id;
+ // globalData["2015week1"] = JSON.parse(yield fs.readFile('old_data/original/' + year + 'week1.json', 'utf8'));
+ //  for(var g in globalData["2015week1"].events){
+ //    globalData["2015week1"].events[g].competitions[0].competitors[0].team._id =globalData["2015week1"].events[g].competitions[0].competitors[0].team.id;
+ //    globalData["2015week1"].events[g].competitions[0].competitors[1].team._id =globalData["2015week1"].events[g].competitions[0].competitors[1].team.id;
     
-    yield this.mongo.db('pickem').collection('teams').save(_.pick(globalData["2015week1"].events[g].competitions[0].competitors[0].team, '_id', 'location', 'name', 'abbreviation'));
-    yield this.mongo.db('pickem').collection('teams').save(_.pick(globalData["2015week1"].events[g].competitions[0].competitors[1].team, '_id', 'location', 'name', 'abbreviation'));
-  }
+ //    yield this.mongo.db('pickem').collection('teams').save(_.pick(globalData["2015week1"].events[g].competitions[0].competitors[0].team, '_id', 'location', 'name', 'abbreviation'));
+ //    yield this.mongo.db('pickem').collection('teams').save(_.pick(globalData["2015week1"].events[g].competitions[0].competitors[1].team, '_id', 'location', 'name', 'abbreviation'));
+ //  }
   
 this.body = "Here";
 // console.log(year);
@@ -341,9 +344,11 @@ function *loadall(year) {
 
 /*Route Handlers*/
 function *season() {
+  var userReuse = {};
 
   globalData.groups = globalData.groups.map(function(group){
     group.members = group.members.map(function(member){
+
       var temp = users[member];
       temp.total = temp.scores.reduce(function(pv, cv) {
         return pv + cv;
@@ -358,7 +363,14 @@ function *season() {
 function *results(week) {
   if(typeof week === 'object')week = '1';
   globalData.weeks[parseInt(week, 10)-1].current = true;
-  var games = yield this.mongo.db('pickem').collection('games').find({week: week }).toArray();
+
+
+  var thisweek =  yield this.mongo.db('pickem').collection('weeks').findOne({week: parseInt(week), season: '2016'});
+  var games = {};
+  if(thisweek !== null){
+    games = thisweek.games;
+  }
+
   for(var game in games){
     games[game].homewin = (games[game].winner == games[game].home);
     games[game].awaywin = (games[game].winner == games[game].away);
@@ -367,11 +379,8 @@ function *results(week) {
   }
   globalData.source = games;
 
-  var ids = games.map(function(game){
-    return game._id;
-  })
   var user = this.req.user.username;
-  userReuse = {};
+  var userReuse = {};
   for(var g in globalData.groups){
     group = globalData.groups[g];
     for(var m in group.members){
@@ -382,17 +391,18 @@ function *results(week) {
         userReuse[member] = yield this.mongo.db('pickem').collection('users').findOne({username: member });
       }
 
-      temp.games = yield this.mongo.db('pickem').collection('picks').find({user_id: userReuse[member]._id, game_id: {$in: ids} }).toArray();
+      var mygames =  yield this.mongo.db('pickem').collection('picks').findOne({week: week, season: '2016', user:userReuse[member]._id});
+      temp.games = [];
+      if(mygames !== null){
+        temp.games = mygames.picks;
+      }
 
       for(var game in temp.games){
-        temp.games[game].pick = yield teamFromID.call(this,temp.games[game].pick);
-      }
-      temp.games = _.map(temp.games, function(game){
-
-        game.winner = (_.find(games, {_id: game.game_id}).winner === game.pick._id);
-        return game;
-      })
-      temp.games = _.sortBy(temp.games, 'id');
+        if(typeof temp.games[game].pick !== 'undefined'){
+          temp.games[game].pick = yield teamFromID.call(this,temp.games[game].pick);
+          temp.games[game].winner = (_.find(games, {index: game}).winner === temp.games[game].pick._id);
+        }
+      }      
 
       temp.total = temp.games.reduce(function(pv, cv, index, items) {
         if(items[index].winner){
@@ -415,81 +425,87 @@ function *results(week) {
     group.members = _.sortBy(group.members, function(o) { return o.total; }).reverse();
     globalData.groups[g] = group;
   }
+
+
   globalData.games = games;
   yield this.render("results", _.extend({user: this.req.user}, globalData));
 }
+
+
+
 
 function *picker(week) {
   if(typeof week === 'object')week = '1';
   globalData.weeks[parseInt(week, 10)-1].current = true;
 
-
-  // var games = yield this.mongo.db('pickem').collection('games').find({week: week }).toArray();
   var mygames = yield this.mongo.db('pickem').collection('weeks').findOne({week: parseInt(week, 10), season: '2016' });
   var games = mygames.games;
   for(var game in games){
-
     games[game].home = yield teamFromID.call(this,games[game].home);
     games[game].away = yield teamFromID.call(this,games[game].away);
     games[game].winner = yield teamFromID.call(this,games[game].winner);
-
-    // games[game].home = yield this.mongo.db('pickem').collection('teams').findOne({_id: games[game].home });
-    // games[game].away = yield this.mongo.db('pickem').collection('teams').findOne({_id: games[game].away });
-    // games[game].winner = yield this.mongo.db('pickem').collection('teams').findOne({_id: games[game].winner });
-
   }
-  // console.log(games);
-  var ids = _.map(games, '_id')
 
-  // var picks = yield this.mongo.db('pickem').collection('picks').find({user_id: this.req.user._id, game_id: {$in: ids}}).toArray();
-  //should remove and just let game id be right
   var pickems =  yield this.mongo.db('pickem').collection('picks').findOne({week: week, season: '2016', user: this.req.user._id });
-var picks = {};
-console.log(pickems);
-if(pickems !== null){
-  picks = pickems.picks;
-}
+  var picks = [];
+  if(pickems !== null){
+    picks = pickems.picks;
+  }
   picks =_.map(picks, function(pick, i){
     return {id: i, pick: pick.pick, points: pick.points};
   })
-  // picks = {};
-  // var ids = games.map(function(game){
-  //   game.home = getTeam(pick.pick);
 
-  //   // return game.id;
-  // })
   globalData.games = JSON.stringify(games);
   globalData.picks = JSON.stringify(picks);
+  globalData.week = week;
   yield this.render("picks", _.extend({user: this.req.user}, globalData));
 }
 
 function *pickem(week){
-    // console.log(this.request.body);
+  this.body = this.request.body;
+  var changed = this.request.body.changed;
+  var item = {picks: changed, user: this.req.user._id, week: week, season: '2016'}
 
-this.body = this.request.body;
-var changed = this.request.body.changed;
-var item = {picks: changed, user: this.req.user._id, week: week, season: '2016'}
-
-var old =  yield this.mongo.db('pickem').collection('picks').findOne({week: week, season: '2016', user: this.req.user._id });
-if(old !== null){
-    item._id = old._id;
+  var old =  yield this.mongo.db('pickem').collection('picks').findOne({week: week, season: '2016', user: this.req.user._id });
+  if(old !== null){
+      item._id = old._id;
+  }
+  this.mongo.db('pickem').collection('picks').save(item);
 }
-this.mongo.db('pickem').collection('picks').save(item);
-// var item = {picks: changed, user: this.req.user._id, week: week, season: '2016'}
-// for(var i in changed){
 
-//   var old =  yield this.mongo.db('pickem').collection('picks').findOne({game_id: ObjectId(changed[i].id), user_id: this.req.user._id });
-//   console.log(old);
 
-//     changed[i].game_id = ObjectId(changed[i].id) ;
-//     changed[i].user_id = this.req.user._id;
-//   if(old !== null){
-//     changed[i]._id = old._id;
-//   }
-//   console.log(changed[i]);
-//   this.mongo.db('pickem').collection('picks').save(changed[i]);
 
-// }
+
+function *account(){
+  globalData.userdata = JSON.stringify(_.omit(this.req.user, '_id', 'password') );
+  yield this.render("account", _.extend({user: this.req.user}, globalData));
+}
+
+
+function *accountUpdate(){
+
+  // var newUser = this.request.body.user;
+  // newUser._id = this.req.user._id;
+  // console.log
+  this.req.user.username = this.request.body.user.username;
+  this.mongo.db('pickem').collection('users').save(this.req.user);
+  this.body = {error:false} ;
+
+
+}
+function *passwordUpdate(){
+    var salt = yield bcrypt.genSalt(10)
+    this.req.user.password = yield bcrypt.hash(this.request.body.new_password, salt)
+      // console.log(hash);
+    this.mongo.db('pickem').collection('users').save(this.req.user);
+    this.body = {error:false} ;
+
+}
+
+function *test(week){
+//  this.body = req('http://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?calendartype=blacklist&limit=100&dates=2016&seasontype=2&week='+week);
+
+
 
 }
 
@@ -507,6 +523,4 @@ function *logout(week) {
 app.listen(3000);
 console.log('listening on port 3000');
 
-
-
-// {"user_id": "56e3a4bd1322a2ce391e8f14", "game_id": {$in: ["57a6276dd97b6b3b0345274b", "57a6276ed97b6b3b0345274f"]} }
+//http://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?calendartype=blacklist&limit=100&dates=2016&seasontype=2&week=2
