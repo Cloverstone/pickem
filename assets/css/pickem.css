@@ -100,7 +100,7 @@ body{
 .Green { background-position: -180px 0; }
 .Detroit { background-position: -210px 0; }
 
-.Louis { background-position: 0 -30px; }
+.Louis , .Angeles{ background-position: 0 -30px; }
 .Seattle { background-position: -30px -30px; }
 .Francisco { background-position: -60px -30px; }
 .Diego { background-position: -90px -30px; }
@@ -130,6 +130,6 @@ body{
 .btn-team{width: 200px;line-height: 20px;}
 @media (max-width: 767px){
 .btn-team {
-    width: 50px;
+    width: 120px;
 }
 }

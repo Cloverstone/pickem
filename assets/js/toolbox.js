@@ -28,7 +28,7 @@ window.onload =function(){
 	if($('#form').length){
 		$('#form').berry({
 			actions:['save'],
-			default:{type: 'gamePick', min: min, max: max, default:{label: 'Choose', value: 0}, required: true},
+			default:{type: 'gamePick', min: min, max: max, default:{label: 'Choose', value: 0}, required: true, value:{points: 0}},
 			attributes: _.keyBy(picks, 'id'), 
 			fields: data 
 		}).on('change', function(){
@@ -56,15 +56,15 @@ window.onload =function(){
 				proceed = confirm("You have some errors in your picks are you sure you want to proceed?")
 			}
 			if(proceed){
-				result = this.toJSON(null, true);
+				// result = this.toJSON(null, true);
 
 
-				changed = _.filter(result,function(item){return !_.isEqual(_.find(picks, {id: item.id}) || {}, item);});
+				// changed = _.filter(result,function(item){return !_.isEqual(_.find(picks, {id: item.id}) || {}, item);});
 
 				$.ajax({
 	  				type: "POST",
 					  url: '/picks/1',
-					  data: {changed:changed},
+					  data: {changed:_.values(this.toJSON(null, true))},
 					  // success: success,
 					  // dataType: dataType
 					});
@@ -81,7 +81,7 @@ templates['available'] = Hogan.compile(available, templates);
 var gamePick = `
 <div class="row clearfix {{modifiers}}" name="{{id}}" data-type="{{type}}" style="margin-bottom: 1px;padding:5px">
 	<div class="col-md-5 col-xs-4" style="text-align:right">
-		<div class="btn btn-none btn-team" data-value="{{{away._id}}}"><span class="awayteam hidden-xs">{{{away.name}}}</span><span class="cube team-icon {{away.name}} {{away.location}}" style="margin:-5px;float:right"></span></div>
+		<div class="btn btn-none btn-team" data-value="{{{away._id}}}"><span class="awayteam hidden-sm hidden-md hidden-lg">{{{away.abbreviation}}}</span><span class="awayteam hidden-xs">{{{away.name}}}</span><span class="cube team-icon {{away.name}} {{away.location}}" style="margin:-5px;float:right"></span></div>
 	</div>
 	<div class="col-md-2 col-xs-4" >
 	<select class="form-control"  name="{{id}}" {{^isEnabled}}readonly disabled="true"{{/isEnabled}}  {{#multiple_enable}}multiple{{/multiple_enable}} >
@@ -93,7 +93,7 @@ var gamePick = `
 	</select>
 	</div>
 	<div class="col-md-5 col-xs-4" style="text-align:left">
-		<div class="btn btn-none btn-team" data-value="{{{home._id}}}"><span class="cube team-icon {{home.name}}  {{home.location}}" style="margin:-5px;float:left"></span><span class="hometeam hidden-xs">{{{home.name}}}</span></div>
+		<div class="btn btn-none btn-team" data-value="{{{home._id}}}"><span class="cube team-icon {{home.name}}  {{home.location}}" style="margin:-5px;float:left"></span><span class="hometeam hidden-xs">{{{home.name}}}</span><span class="hometeam hidden-sm hidden-md hidden-lg">{{{home.abbreviation}}}</span></div>
 	</div>
 </div>`;
 

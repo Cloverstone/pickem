@@ -209,18 +209,19 @@ function *newLoadall(year) {
   // this.body = globalData.schedule;
   // console.log(globalData.schedule.length);
 
-  // // load teams
-  // for(var g in globalData["2015week1"].events){
-  //   globalData["2015week1"].events[g].competitions[0].competitors[0].team._id =globalData["2015week1"].events[g].competitions[0].competitors[0].team.id;
-  //   globalData["2015week1"].events[g].competitions[0].competitors[1].team._id =globalData["2015week1"].events[g].competitions[0].competitors[1].team.id;
+  // load teams
+ globalData["2015week1"] = JSON.parse(yield fs.readFile('old_data/original/' + year + 'week1.json', 'utf8'));
+  for(var g in globalData["2015week1"].events){
+    globalData["2015week1"].events[g].competitions[0].competitors[0].team._id =globalData["2015week1"].events[g].competitions[0].competitors[0].team.id;
+    globalData["2015week1"].events[g].competitions[0].competitors[1].team._id =globalData["2015week1"].events[g].competitions[0].competitors[1].team.id;
     
-  //   yield this.mongo.db('pickem').collection('teams').save(_.pick(globalData["2015week1"].events[g].competitions[0].competitors[0].team, '_id', 'location', 'name', 'abbreviation'));
-  //   yield this.mongo.db('pickem').collection('teams').save(_.pick(globalData["2015week1"].events[g].competitions[0].competitors[1].team, '_id', 'location', 'name', 'abbreviation'));
-  // }
+    yield this.mongo.db('pickem').collection('teams').save(_.pick(globalData["2015week1"].events[g].competitions[0].competitors[0].team, '_id', 'location', 'name', 'abbreviation'));
+    yield this.mongo.db('pickem').collection('teams').save(_.pick(globalData["2015week1"].events[g].competitions[0].competitors[1].team, '_id', 'location', 'name', 'abbreviation'));
+  }
   
 this.body = "Here";
 // console.log(year);
-  for(var i=1;i<=8;i++){
+  for(var i=1;i<=16;i++){
     // console.log('old_data/original/'+year+'week'+i+'.json');
    var weekData = JSON.parse(yield fs.readFile('old_data/original/' + year + 'week' + i + '.json', 'utf8'));
    var week = {'week': i, 'season': year, 'games': []};
@@ -423,7 +424,9 @@ function *picker(week) {
   globalData.weeks[parseInt(week, 10)-1].current = true;
 
 
-  var games = yield this.mongo.db('pickem').collection('games').find({week: week }).toArray();
+  // var games = yield this.mongo.db('pickem').collection('games').find({week: week }).toArray();
+  var mygames = yield this.mongo.db('pickem').collection('weeks').findOne({week: parseInt(week, 10), season: '2016' });
+  var games = mygames.games;
   for(var game in games){
 
     games[game].home = yield teamFromID.call(this,games[game].home);
@@ -435,13 +438,21 @@ function *picker(week) {
     // games[game].winner = yield this.mongo.db('pickem').collection('teams').findOne({_id: games[game].winner });
 
   }
+  // console.log(games);
   var ids = _.map(games, '_id')
 
-  var picks = yield this.mongo.db('pickem').collection('picks').find({user_id: this.req.user._id, game_id: {$in: ids}}).toArray();
+  // var picks = yield this.mongo.db('pickem').collection('picks').find({user_id: this.req.user._id, game_id: {$in: ids}}).toArray();
   //should remove and just let game id be right
-  picks =_.map(picks, function(pick){
-    return {id: pick.game_id, pick: pick.pick, points: pick.points};
+  var pickems =  yield this.mongo.db('pickem').collection('picks').findOne({week: week, season: '2016', user: this.req.user._id });
+var picks = {};
+console.log(pickems);
+if(pickems !== null){
+  picks = pickems.picks;
+}
+  picks =_.map(picks, function(pick, i){
+    return {id: i, pick: pick.pick, points: pick.points};
   })
+  // picks = {};
   // var ids = games.map(function(game){
   //   game.home = getTeam(pick.pick);
 
@@ -457,20 +468,28 @@ function *pickem(week){
 
 this.body = this.request.body;
 var changed = this.request.body.changed;
-for(var i in changed){
+var item = {picks: changed, user: this.req.user._id, week: week, season: '2016'}
 
-  var old =  yield this.mongo.db('pickem').collection('picks').findOne({game_id: ObjectId(changed[i].id), user_id: this.req.user._id });
-  console.log(old);
-
-    changed[i].game_id = ObjectId(changed[i].id) ;
-    changed[i].user_id = this.req.user._id;
-  if(old !== null){
-    changed[i]._id = old._id;
-  }
-  console.log(changed[i]);
-  this.mongo.db('pickem').collection('picks').save(changed[i]);
-
+var old =  yield this.mongo.db('pickem').collection('picks').findOne({week: week, season: '2016', user: this.req.user._id });
+if(old !== null){
+    item._id = old._id;
 }
+this.mongo.db('pickem').collection('picks').save(item);
+// var item = {picks: changed, user: this.req.user._id, week: week, season: '2016'}
+// for(var i in changed){
+
+//   var old =  yield this.mongo.db('pickem').collection('picks').findOne({game_id: ObjectId(changed[i].id), user_id: this.req.user._id });
+//   console.log(old);
+
+//     changed[i].game_id = ObjectId(changed[i].id) ;
+//     changed[i].user_id = this.req.user._id;
+//   if(old !== null){
+//     changed[i]._id = old._id;
+//   }
+//   console.log(changed[i]);
+//   this.mongo.db('pickem').collection('picks').save(changed[i]);
+
+// }
 
 }
 
