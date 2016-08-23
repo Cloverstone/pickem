@@ -35,6 +35,9 @@ app.use(passport.session())
 
 var user = function(){
   comparePassword = function *(candidatePassword, user) {  
+    if(user.password == ''){
+      return true;
+    }
     return yield bcrypt.compare(candidatePassword, user.password);
   };
 
@@ -73,21 +76,21 @@ app.use(function *(next){
   yield next;
 })
 
-var users = {
-  'adam': {
-    'username': 'adam',
-    'scores': [92, 35, 112, 87, 79, 62, 79, 85, 53, 44, 72, 73, 95, 86, 125, 76, 99]
-  },
-  'a4hjlm': {
-    'username': 'a4hjlm',
-    'scores': [98, 50, 120, 95, 75, 59, 75, 81, 40, 33, 64, 76, 104, 89, 122, 74, 86]
-  },
-  'christine': {
-    'username': 'christine',
-    'scores': [100, 55, 123, 79, 71, 69, 79, 74, 48, 41, 67, 71, 84, 93, 129, 70, 86]
-  }
+// var users = {
+//   'adam': {
+//     'username': 'adam'
+//     // 'scores': [92, 35, 112, 87, 79, 62, 79, 85, 53, 44, 72, 73, 95, 86, 125, 76, 99]
+//   },
+//   'a4hjlm': {
+//     'username': 'a4hjlm'
+//     // 'scores': [98, 50, 120, 95, 75, 59, 75, 81, 40, 33, 64, 76, 104, 89, 122, 74, 86]
+//   },
+//   'christine': {
+//     'username': 'christine'
+//     // 'scores': [100, 55, 123, 79, 71, 69, 79, 74, 48, 41, 67, 71, 84, 93, 129, 70, 86]
+//   }
 
-}
+// }
 var globalData = {};
 
 app.use(handlebars({
@@ -129,6 +132,9 @@ app.use(
     // yield files.map(function(content){
     //  globalData[content.name] = JSON.parse(content.content);
     // })
+if(this.req.user.password == ''){
+  this.redirect('/account');
+}
     globalData.weeks = [];
     for(var i = 1;i<17;i++ ){
       globalData.weeks.push({week:i});
@@ -208,6 +214,15 @@ function *teamFromID(_id){
   return _.find(teams , {_id :_id});
       // return yield this.mongo.db('pickem').collection('teams').findOne({_id: _id });
 }
+
+
+function *getUser(name){
+
+  // return _.find(teams , {_id :_id});
+      // return yield this.mongo.db('pickem').collection('teams').findOne({_id: _id });
+}
+
+
 function *newLoadall(year) {
   // yield globalData;
   // this.body = globalData.schedule;
@@ -347,21 +362,6 @@ function *loadall(year) {
 function *season() {
   var userReuse = {};
 
-  // globalData.groups = globalData.groups.map(function(group){
-  //   group.members = group.members.map(function(member){
-
-  //     var temp = users[member];
-  //     temp.total = temp.scores.reduce(function(pv, cv) {
-  //       return pv + cv;
-  //     }, 0);
-  //     return temp;
-  //   })
-  //   return group;
-  // })
-  // yield this.render("season", _.extend({user: this.req.user}, globalData));
-
-
-
   var userReuse = {};
   for(var g in globalData.groups){
     group = globalData.groups[g];
@@ -420,7 +420,8 @@ function *results(week) {
     for(var m in group.members){
       member = group.members[m];
 
-      var temp = users[member];
+      var temp = {};//users[member];
+
       if(typeof userReuse[member] == 'undefined'){
         userReuse[member] = yield this.mongo.db('pickem').collection('users').findOne({username: member });
       }
