@@ -35,10 +35,15 @@ app.use(passport.session())
 
 var user = function(){
   comparePassword = function *(candidatePassword, user) {  
+
+    var value = false;
     if(user.password == ''){
-      return true;
-    }
-    return yield bcrypt.compare(candidatePassword, user.password);
+      value = true;
+    }else{
+      value = yield bcrypt.compare(candidatePassword, user.password);
+    }        console.log(value)
+
+    return value;
   };
 
   matchUser = function *(username, password) { 
@@ -132,9 +137,7 @@ app.use(
     // yield files.map(function(content){
     //  globalData[content.name] = JSON.parse(content.content);
     // })
-if(this.req.user.password == ''){
-  this.redirect('/account');
-}
+
     globalData.weeks = [];
     for(var i = 1;i<17;i++ ){
       globalData.weeks.push({week:i});
@@ -150,7 +153,6 @@ if(this.req.user.password == ''){
 app.use(function *(next) {
   if(this.req.url !== '/login'){
     if (this.isAuthenticated()) {
-
       yield next
     } else {
       this.redirect('/login')
@@ -360,6 +362,9 @@ function *loadall(year) {
 
 /*Route Handlers*/
 function *season() {
+  if(typeof this.req.user !== 'undefined' && this.req.user.password == ''){
+  this.redirect('/account');
+}
   var userReuse = {};
 
   var userReuse = {};
