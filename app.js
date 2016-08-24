@@ -362,9 +362,9 @@ function *loadall(year) {
 
 /*Route Handlers*/
 function *season() {
-  if(typeof this.req.user !== 'undefined' && this.req.user.password == ''){
-  this.redirect('/account');
-}
+  if(typeof this.req.user !== 'undefined' && this.req.user.password == '') {
+    this.redirect('/account');
+  }
   var userReuse = {};
 
   var userReuse = {};
@@ -374,7 +374,7 @@ function *season() {
       member = group.members[m];
 
       if(typeof userReuse[member] == 'undefined'){
-        userReuse[member] = yield this.mongo.db('pickem').collection('users').findOne({username: member });
+        userReuse[member] = yield this.mongo.db('pickem').collection('users').findOne({_id: member });
         userReuse[member].scores = [];
 
         for(var i = 1;i<=16;i++){
@@ -385,16 +385,13 @@ function *season() {
             userReuse[member].scores.push({week: i, score: '', wins: ''});
           }
         }
-        // console.log(userReuse[member]);
       }
-
-        group.members[m] = userReuse[member];
+      group.members[m] = userReuse[member];
     }
 
     group.members = _.sortBy(group.members, function(o) { return o.total; }).reverse();
     globalData.groups[g] = group;
   }
-// console.log(globalData);
   yield this.render("season", _.extend({user: this.req.user}, globalData));
 
 }
@@ -425,47 +422,29 @@ function *results(week) {
     for(var m in group.members){
       member = group.members[m];
 
-      var temp = {};//users[member];
-
       if(typeof userReuse[member] == 'undefined'){
-        userReuse[member] = yield this.mongo.db('pickem').collection('users').findOne({username: member });
-      }
+        userReuse[member] = yield this.mongo.db('pickem').collection('users').findOne({_id: member });
 
-      var mygames =  yield this.mongo.db('pickem').collection('picks').findOne({week: week, season: '2015', user:userReuse[member]._id});
-      temp.games = [];
-      if(mygames !== null){
-        temp.games = mygames.picks;
-      }
+        var mygames =  yield this.mongo.db('pickem').collection('picks').findOne({week: week, season: '2015', user:userReuse[member]._id});
+        if(mygames !== null){
+          userReuse[member].games = mygames.picks;
+          userReuse[member].total = mygames.total;
+          userReuse[member].wins = mygames.wins;
+          userReuse[member].current = (user == member);
 
-      for(var game in temp.games){
-        if(typeof temp.games[game].pick !== 'undefined'){
-          temp.games[game].pick = yield teamFromID.call(this,temp.games[game].pick);
-          temp.games[game].winner = (_.find(games, {index: game}).winner === temp.games[game].pick._id);
+          for(var game in mygames.picks){
+            if(typeof mygames.picks[game].pick !== 'undefined'){
+              mygames.picks[game].pick = yield teamFromID.call(this,mygames.picks[game].pick);
+              mygames.picks[game].winner = (_.find(games, {index: game}).winner === mygames.picks[game].pick._id);
+            }
+          }      
         }
-      }      
-
-      temp.total = temp.games.reduce(function(pv, cv, index, items) {
-        if(items[index].winner){
-          return pv + parseInt(cv.points, 10);
-        }
-        return pv;
-      }, 0);      
-      if(user == member){
-        temp.current = true;
       }
-      temp.wins = temp.games.reduce(function(pv, cv, index, items) {
-        if(items[index].winner){
-          return pv+ 1;
-        }
-        return pv;
-      }, 0);
-
-      group.members[m] = temp;
+      group.members[m] = userReuse[member];
     }
     group.members = _.sortBy(group.members, function(o) { return o.total; }).reverse();
     globalData.groups[g] = group;
   }
-
 
   globalData.games = games;
   yield this.render("results", _.extend({user: this.req.user}, globalData));
@@ -536,14 +515,12 @@ function *accountUpdate(){
 function *passwordUpdate(){
     var salt = yield bcrypt.genSalt(10)
     this.req.user.password = yield bcrypt.hash(this.request.body.new_password, salt)
-      // console.log(hash);
     this.mongo.db('pickem').collection('users').save(this.req.user);
     this.body = {error:false} ;
 
 }
 
 function *test(){
-//  this.body = req('http://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?calendartype=blacklist&limit=100&dates=2015&seasontype=2&week='+week);
   var week = '1';
   var year = '2015';
   var weekData = JSON.parse(yield fs.readFile('old_data/original/' + year + 'week' + week + '.json', 'utf8'));
@@ -551,46 +528,38 @@ function *test(){
 
   var mygames = yield this.mongo.db('pickem').collection('weeks').findOne({week: parseInt(week, 10), season: '2015' });
 
+  for(var g in weekData.events) {
+    var winner = "";
+    var temp = weekData.events[g].competitions[0];
 
-  // var week = {'week': i, 'season': year, 'games': []};
-    for(var g in weekData.events) {
-      // var game = {'index': g};
-      var winner = "";
-      var temp = weekData.events[g].competitions[0];
-
-      if(temp.competitors[0].winner){
-        winner = temp.competitors[0].team.id;
-      }else if(temp.competitors[1].winner){
-        winner = temp.competitors[1].team.id;
-      }
-      mygames.games[g].winner = winner;
-      games.push(winner);
+    if(temp.competitors[0].winner){
+      winner = temp.competitors[0].team.id;
+    }else if(temp.competitors[1].winner){
+      winner = temp.competitors[1].team.id;
     }
+    mygames.games[g].winner = winner;
+    games.push(winner);
+  }
 
-    this.mongo.db('pickem').collection('weeks').save(mygames);
+  this.mongo.db('pickem').collection('weeks').save(mygames);
 
-    // console.log(games);
-
-    var picks = yield this.mongo.db('pickem').collection('picks').find({week: week, season: year}).toArray();
-    for(var p in picks){
-      var total = 0;
-      for(var g in games){
-        if(
-          games[g] !== '' && 
-          typeof picks[p].picks[g] !== 'undefined' && 
-          parseInt(games[g],10) == parseInt(picks[p].picks[g].pick,10) &&
-          typeof picks[p].picks[g].points !== 'undefined'
-        ){
-          total += parseInt(picks[p].picks[g].points, 10);
-        }
+  var picks = yield this.mongo.db('pickem').collection('picks').find({week: week, season: year}).toArray();
+  for(var p in picks){
+    picks[p].total = 0;
+    picks[p].wins = 0;
+    for(var g in games) {
+      if(
+        games[g] !== '' && 
+        typeof picks[p].picks[g] !== 'undefined' && 
+        parseInt(games[g],10) == parseInt(picks[p].picks[g].pick,10) &&
+        typeof picks[p].picks[g].points !== 'undefined'
+      ){
+        picks[p].total += parseInt(picks[p].picks[g].points, 10);
+        picks[p].wins++;
       }
-      console.log(picks[p].user+': '+total);
-      picks[p].total = total;
-      yield this.mongo.db('pickem').collection('picks').save(picks[p]);
-
     }
-    // yield this.mongo.db('pickem').collection('weeks').save(week);
-
+    yield this.mongo.db('pickem').collection('picks').save(picks[p]);
+  }
 }
 
 function *showLogin(week) {

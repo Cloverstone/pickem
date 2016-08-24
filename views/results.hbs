@@ -26,18 +26,18 @@
 	    <div id="{{name}}" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading{{name}}">
 	      <div class="panel-body">
 					{{#members}}
-					<div class="member {{#current}}active{{/current}}">
-					<span class="main">
-						<span class="username">{{username}}</span>
-						<span class="total">{{total}}</span>
-						<span class="wins">{{wins}}/17</span>
-					</span>
-						{{#games}}
-						<span class="playerResult{{#winner}} correct{{/winner}}">
-							<span class="team-icon {{pick.name}} {{pick.location}}"></span>
-							{{points}}
-						</span>
-						{{/games}}
+						<div class="member {{#current}}active{{/current}}">
+							<span class="main">
+								<span class="username">{{username}}</span>
+								<span class="total">{{total}}</span>
+								<span class="wins">{{wins}}/17</span>
+							</span>
+							{{#games}}
+							<span class="playerResult{{#winner}} correct{{/winner}}">
+								<span class="team-icon {{pick.name}} {{pick.location}}"></span>
+								{{points}}
+							</span>
+							{{/games}}
 						</div>
 					{{/members}}
 	      </div>
