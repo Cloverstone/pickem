@@ -8,7 +8,8 @@ window.onload =function(){
 			inline:true,
 			attributes: userdata, 
 			fields: {
-				'Username': {}
+				'Username': {},
+				'Email': {type: 'email'}
 			} 
 		}).on('save', function(){
 

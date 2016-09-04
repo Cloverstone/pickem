@@ -7,23 +7,43 @@ const fs = require('co-fs');
 var co = require('co')
 const route = require('koa-route');
 const parse = require('koa-bodyparser');
+const cookie = require('cookie')
 const handlebars = require("koa-handlebars");
 const serve = require('koa-static-folder');
 const bcrypt = require('co-bcrypt');
 var LocalStrategy = require('passport-local').Strategy;
 var ObjectId = require('mongodb').ObjectID;
 // var mongoose = require('koa-mongoose')
-var mongo = require('koa-mongo');
-var req = require('request');
+const mongo = require('koa-mongo');
 
+var req = require('request');
+const IO = require( 'koa-socket' )
+
+
+const io = new IO()
 
 // const convert = require('koa-convert') // necessary until koa-generic-session has been updated to support koa@2 
-const session = require('koa-generic-session')
+// const session = require('koa-generic-session')
+// const MongoStore = require('connect-mongo')(session);
+const session = require('koa-session-store');
+const mongoStore = require('koa-session-mongo');
+
 
 app.keys = ['secret']
- app.use(session({
-    key: 'koapassportexample.sid',
-  }));
+ // app.use(session({
+ //    key: 'koapassportexample.sid',
+ //  }));
+
+
+app.use(session({
+  store: mongoStore.create({
+    // db: 'pickem',
+    url: 'mongodb://pickem:pickem117@ds011439.mlab.com:11439/pickem',
+
+    key: 'koapassportexample.sid'
+  })
+}));
+
 const _ = require('lodash');
 const passport = require('koa-passport')
 
@@ -41,7 +61,7 @@ var user = function(){
       value = true;
     }else{
       value = yield bcrypt.compare(candidatePassword, user.password);
-    }        console.log(value)
+    }        
 
     return value;
   };
@@ -76,8 +96,10 @@ app.use(
   })
 );
 var myUser;
+var myMongo;
 app.use(function *(next){
   myUser = user.call(this);
+  myMongo = this.mongo;
   yield next;
 })
 
@@ -507,6 +529,7 @@ function *accountUpdate(){
   // newUser._id = this.req.user._id;
   // console.log
   this.req.user.username = this.request.body.user.username;
+  this.req.user.email = this.request.body.user.email;
   this.mongo.db('pickem').collection('users').save(this.req.user);
   this.body = {error:false} ;
 
@@ -570,10 +593,119 @@ function *logout(week) {
   this.logout();
   this.redirect('/login');
 }
+io.attach( app )
 
+
+// io.on('connection', function(ctx){
+//   console.log('----- a user connected');
+//   var session_cookie = cookie.parse(ctx.socket.handshake.headers.cookie)['koa:sess'];
+//   if(typeof session_cookie !== 'undefined'){
+//     var session_id = JSON.parse(session_cookie);
+    
+//     var mysession = getsession(session_id._sid);
+//     console.log(mysession);
+//   }
+
+
+//    var room = 120;
+//   ctx.socket.on('join',  function(data){
+//       this.socket.join(room);
+//   }.bind(ctx));
+//   ctx.socket.on('disconnect', function() {
+//     ctx.socket.leave(room)
+//     console.log('user disconnected');
+//   }.bind(ctx));
+
+// });
+
+io.on('connection', ( ctx, data ) => {
+  console.log('----- a user connected');
+  if(typeof ctx.socket.handshake.headers.cookie !== 'undefined'){
+      var session_cookie = cookie.parse(ctx.socket.handshake.headers.cookie)['koa:sess'];
+    if(typeof session_cookie !== 'undefined'){
+      var session_id = JSON.parse(session_cookie);
+      console.log(session_id._sid);
+      co(function*(){
+        var mysession = yield myMongo.db('pickem').collection('sessions').findOne({_id: session_id._sid});
+        // console.log(JSON.parse(mysession.blob).passport.user);
+        var user = yield myMongo.db('pickem').collection('users').findOne({username: JSON.parse(mysession.blob).passport.user});
+        var groups = yield myMongo.db('pickem').collection('groups').find({members: ObjectId(user._id)}).toArray();
+        
+        // console.log(_.map(groups, 'name') );
+        var myGroups = _.map(groups, 'name');
+        for(var i in myGroups) {
+          console.log('Joining: '+myGroups[i])
+          ctx.socket.join(myGroups[i]);
+        }
+
+      })
+    }
+  }
+
+  // var room = 120;
+  // ctx.socket.on('join',  function(data){
+  //     this.socket.join(room);
+  // }.bind(ctx));
+
+  ctx.socket.on('disconnect', function(ctx) {
+    // this.socket.leave(room)
+
+    console.log('user disconnected');
+    co(function*(){
+      var mysession = yield myMongo.db('pickem').collection('sessions').findOne({_id: session_id._sid});
+      // console.log(JSON.parse(mysession.blob).passport.user);
+      var user = yield myMongo.db('pickem').collection('users').findOne({username: JSON.parse(mysession.blob).passport.user});
+      var groups = yield myMongo.db('pickem').collection('groups').find({members: ObjectId(user._id)}).toArray();
+      
+      // console.log(_.map(groups, 'name') );
+      var myGroups = _.map(groups, 'name');
+      for(var i in myGroups) {
+        console.log('Leaving: '+myGroups[i])
+        ctx.socket.leave(myGroups[i]);
+      }
+
+    })
+
+
+    // this.sockets.manager.roomClients[socket.id] 
+    // this.socket.leave
+  });
+
+//   ctx.socket.on('sendMessage',  function(){
+//     console.log( ctx.data);
+
+//       this.socket.to(ctx.data.group).emit('game', {"stuff":1});
+//   }.bind(ctx));
+
+
+
+// ctx.socket.on( 'message', ( ctx, data ) => {
+//   console.log( `message: ${ data.group }` )
+//   ctx.socket.to(data.group).emit('game', {"stuff":1});
+
+// })
+
+  // io.on('message', function(ctx){
+  //   console.log(ctx.acknowledge);
+  //   io.socket.to(ctx.acknowledge.group).emit('message', {"content":ctx.acknowledge.group});
+  // });
+
+})
+
+
+
+  // io.on('message', function(ctx){
+  //   console.log(ctx.acknowledge);
+  //   io.socket.to(msg.acknowledge.group).emit('message', {"content":ctx.acknowledge.group});
+  // });
+
+io.on('message', function(msg){
+  console.log(msg.data.group);
+  io.socket.to(msg.data.group).emit('message', {"content":msg.data.content});
+});
 // listen
 
 app.listen(process.env.PORT || 3000);
-console.log('listening on port 3000');
+console.log('listening on port'+(process.env.PORT || 3000));
 
 //http://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?calendartype=blacklist&limit=100&dates=2015&seasontype=2&week=2

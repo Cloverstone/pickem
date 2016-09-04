@@ -42,3 +42,8 @@ modal = function(options) {
 
 
 
+var socket = io();
+socket.on('message', function(data){
+$(".trash-talk ul").append(templates.comment.render(data));
+	// console.log(data);
+})

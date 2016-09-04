@@ -2,7 +2,7 @@
 
 
 @media (min-width: 1200px){
-.container {
+.container .limited-width {
     width: 750px;
 }
 }
