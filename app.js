@@ -535,6 +535,7 @@ function *accountUpdate(){
   // console.log
   this.req.user.username = this.request.body.user.username;
   this.req.user.email = this.request.body.user.email;
+  this.req.user.color = this.request.body.user.color;
   this.mongo.db('pickem').collection('users').save(this.req.user);
   this.body = {error:false} ;
 
@@ -687,8 +688,8 @@ io.on('message', function(msg){
       co(function*(){
         var mysession = yield myMongo.db('pickem').collection('sessions').findOne({_id: session_id._sid});
         // console.log(JSON.parse(mysession.blob).passport.user);
-        // var user = yield myMongo.db('pickem').collection('users').findOne({username: JSON.parse(mysession.blob).passport.user});
-        io.socket.to(msg.data.group).emit('message', {"content":msg.data.content, "user":JSON.parse(mysession.blob).passport.user});
+        var user = yield myMongo.db('pickem').collection('users').findOne({username: JSON.parse(mysession.blob).passport.user});
+        io.socket.to(msg.data.group).emit('message', {"group":msg.data.group, "content":msg.data.content, "user": user});
 
       })
     }

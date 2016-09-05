@@ -9,7 +9,8 @@ window.onload =function(){
 			attributes: userdata, 
 			fields: {
 				'Username': {},
-				'Email': {type: 'email'}
+				'Email': {type: 'email'},
+				'Color': {type: 'color'}
 			} 
 		}).on('save', function(){
 

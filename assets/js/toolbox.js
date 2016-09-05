@@ -44,6 +44,7 @@ modal = function(options) {
 
 var socket = io();
 socket.on('message', function(data){
+	debugger;
 $(".trash-talk ul").prepend(templates.comment.render(data));
 	// console.log(data);
 	toastr.success(data.content);
