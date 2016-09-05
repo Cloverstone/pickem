@@ -150,6 +150,17 @@ passport.deserializeUser(function (id, done) {
     done(null, user);
   })
 });
+
+app.use(function *(next) {
+  if(this.req.url !== '/login'){
+    if (this.isAuthenticated()) {
+      yield next
+    } else {
+      this.redirect('/login')
+    }
+  }else{yield next;}
+})
+
 app.use(
   function *(next){
     // var paths = yield fs.readdir('./data');
@@ -164,7 +175,10 @@ app.use(
     for(var i = 1;i<17;i++ ){
       globalData.weeks.push({week:i});
     }
-    globalData.groups = yield this.mongo.db('pickem').collection('groups').find().toArray();
+    //globalData.groups = yield this.mongo.db('pickem').collection('groups').find().toArray();
+      if(typeof this.req.user !== 'undefined'){
+    globalData.groups = yield myMongo.db('pickem').collection('groups').find({members: ObjectId(this.req.user._id)}).toArray();
+}
     teams =  yield this.mongo.db('pickem').collection('teams').find().toArray();
     yield next;
   }
@@ -172,15 +186,6 @@ app.use(
 // middleware
 
 
-app.use(function *(next) {
-  if(this.req.url !== '/login'){
-    if (this.isAuthenticated()) {
-      yield next
-    } else {
-      this.redirect('/login')
-    }
-  }else{yield next;}
-})
 
 app.use(route.get('/', season));
 app.use(route.get('/results/:week', results));
@@ -624,7 +629,7 @@ io.on('connection', ( ctx, data ) => {
       var session_cookie = cookie.parse(ctx.socket.handshake.headers.cookie)['koa:sess'];
     if(typeof session_cookie !== 'undefined'){
       var session_id = JSON.parse(session_cookie);
-      console.log(session_id._sid);
+      // console.log(session_id._sid);
       co(function*(){
         var mysession = yield myMongo.db('pickem').collection('sessions').findOne({_id: session_id._sid});
         // console.log(JSON.parse(mysession.blob).passport.user);
@@ -671,37 +676,24 @@ io.on('connection', ( ctx, data ) => {
     // this.socket.leave
   });
 
-//   ctx.socket.on('sendMessage',  function(){
-//     console.log( ctx.data);
-
-//       this.socket.to(ctx.data.group).emit('game', {"stuff":1});
-//   }.bind(ctx));
-
-
-
-// ctx.socket.on( 'message', ( ctx, data ) => {
-//   console.log( `message: ${ data.group }` )
-//   ctx.socket.to(data.group).emit('game', {"stuff":1});
-
-// })
-
-  // io.on('message', function(ctx){
-  //   console.log(ctx.acknowledge);
-  //   io.socket.to(ctx.acknowledge.group).emit('message', {"content":ctx.acknowledge.group});
-  // });
-
 })
 
 
-
-  // io.on('message', function(ctx){
-  //   console.log(ctx.acknowledge);
-  //   io.socket.to(msg.acknowledge.group).emit('message', {"content":ctx.acknowledge.group});
-  // });
-
 io.on('message', function(msg){
-  console.log(msg.data.group);
-  io.socket.to(msg.data.group).emit('message', {"content":msg.data.content});
+
+      var session_cookie = cookie.parse(msg.socket.socket.handshake.headers.cookie)['koa:sess'];
+    if(typeof session_cookie !== 'undefined'){
+      var session_id = JSON.parse(session_cookie);
+      co(function*(){
+        var mysession = yield myMongo.db('pickem').collection('sessions').findOne({_id: session_id._sid});
+        // console.log(JSON.parse(mysession.blob).passport.user);
+        // var user = yield myMongo.db('pickem').collection('users').findOne({username: JSON.parse(mysession.blob).passport.user});
+        io.socket.to(msg.data.group).emit('message', {"content":msg.data.content, "user":JSON.parse(mysession.blob).passport.user});
+
+      })
+    }
+
+  // io.socket.to(msg.data.group).emit('message', {"content":msg.data.content});
 });
 // listen
 

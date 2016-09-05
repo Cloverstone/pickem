@@ -4,6 +4,7 @@
 @media (min-width: 1200px){
 .container .limited-width {
     width: 750px;
+    margin: auto;
 }
 }
 body{

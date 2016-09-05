@@ -25,6 +25,7 @@
 	    </div>
 	    <div id="{{name}}" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading{{name}}">
 	      <div class="panel-body">
+	      	{{^limited}}
 					{{#members}}
 						<div class="member {{#current}}active{{/current}}">
 							<span class="main">
@@ -40,16 +41,32 @@
 							{{/games}}
 						</div>
 					{{/members}}
+					{{/limited}}
+					{{#limited}}
+					{{#members}}
+						<div class="member {{#current}}active{{/current}}">
+							<span class="main">
+								<span class="username">{{username}}</span>
+								<span class="total">{{wins}}</span>
+							</span>
+							{{#games}}
+							<span class="playerResult{{#winner}} correct{{/winner}}">
+								<span class="team-icon {{pick.name}} {{pick.location}}"></span>1
+							</span>
+							{{/games}}
+						</div>
+					{{/members}}
+					{{/limited}}
 	      </div>
 	    </div>
 	  </div>
 		{{/groups}}
 	</div>
 </div>
-<div class="trash-talk" style="float:left">
-	<h1>Trash</h1>
-	<ul class="list-group"></ul>
+<div class="trash-talk" style="float:left;width:300px;margin:10px">
+	<h3 style="color:#f8f8f8">Trash Talk<span></span></h3>
 	<div class="form"></div>
+	<ul class="list-group"></ul>
 </div>
 	<script type="text/javascript" src="/assets/js/results.js"></script>
 
