@@ -131,7 +131,7 @@ body{
 .btn-team{width: 200px;line-height: 20px;}
 @media (max-width: 767px){
 .btn-team {
-    width: 120px;
+    width: 100%;
 }
 }
 #container{margin-top:60px;}
