@@ -177,9 +177,13 @@ app.use(
       globalData.weeks.push({week:i});
     }
     //globalData.groups = yield this.mongo.db('pickem').collection('groups').find().toArray();
-      if(typeof this.req.user !== 'undefined'){
-    globalData.groups = yield myMongo.db('pickem').collection('groups').find({members: ObjectId(this.req.user._id)}).toArray();
-}
+    if(typeof this.req.user !== 'undefined'){
+      if(this.req.user.username == 'adam'){
+        globalData.groups = yield this.mongo.db('pickem').collection('groups').find().toArray();
+      }else{
+        globalData.groups = yield myMongo.db('pickem').collection('groups').find({members: ObjectId(this.req.user._id)}).toArray();
+      }
+    }
     teams =  yield this.mongo.db('pickem').collection('teams').find().toArray();
     yield next;
   }
