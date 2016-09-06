@@ -504,6 +504,7 @@ function *picker(week) {
 
   globalData.games = JSON.stringify(games);
   globalData.picks = JSON.stringify(picks);
+  globalData.limited =  (_.reject(globalData.groups, function(item){return item.limited}).length > 0);//JSON.stringify(globalData.groups);
   globalData.week = week;
   yield this.render("picks", _.extend({user: this.req.user}, globalData));
 }
@@ -700,7 +701,7 @@ io.on('message', function(msg){
 // listen
 
 function currentWeek(){
-  return moment().add(-2, 'days').week() - 36 || 1;
+  return (moment().add(-2, 'days').week() - 36 || 1) +'';
 }
 // console.log(currentWeek());
 app.listen(process.env.PORT || 3000);
