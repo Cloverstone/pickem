@@ -37,8 +37,16 @@
 			}; 
 		},
 		setValue: function(value) {
+
 			this.value = value;
-			this.$el.val(value.points || '0')
+			if(limited){
+				
+					this.$el.val("1");
+					this.$el.hide();
+			}else{
+
+					this.$el.val(value.points || "0")
+			}
 			this.self.find('[data-value="'+value.pick+'"]').click();
 		},
 		displayAs: function() {

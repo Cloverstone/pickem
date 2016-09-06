@@ -504,7 +504,7 @@ function *picker(week) {
 
   globalData.games = JSON.stringify(games);
   globalData.picks = JSON.stringify(picks);
-  globalData.limited =  (_.reject(globalData.groups, function(item){return item.limited}).length > 0);//JSON.stringify(globalData.groups);
+  globalData.limited = !_.reject(globalData.groups, function(item){return item.limited}).length;//JSON.stringify(globalData.groups);
   globalData.week = week;
   yield this.render("picks", _.extend({user: this.req.user}, globalData));
 }

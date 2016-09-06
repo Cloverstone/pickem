@@ -19,14 +19,11 @@ window.onload =function(){
 	_.map(data, function(datum){datum.id = datum._id;return datum;})
 	
 
-	var value = '0';
-	if(limited){
-		value = 1;
-	}
+
 	$('#form').berry({
 		name: 'picks_form',
 		actions:['save'],
-		default:{type: 'gamePick', min: min, max: max, default:{label: 'Choose', value: value}, required: true, value:{points: 0}},
+		default:{type: 'gamePick', min: min, max: max, default:{label: 'Choose', value: 'value'}, required: true, value:{points: 0}},
 		attributes: _.keyBy(picks, 'id'), 
 		fields: data 
 	}).on('change', function(){
