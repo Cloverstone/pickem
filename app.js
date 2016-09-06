@@ -18,6 +18,7 @@ const mongo = require('koa-mongo');
 
 var req = require('request');
 const IO = require( 'koa-socket' )
+const moment = require( 'moment' )
 
 
 const io = new IO()
@@ -258,13 +259,13 @@ function *newLoadall(year) {
   // console.log(globalData.schedule.length);
 
   // load teams
- // globalData["2015week1"] = JSON.parse(yield fs.readFile('old_data/original/' + year + 'week1.json', 'utf8'));
- //  for(var g in globalData["2015week1"].events){
- //    globalData["2015week1"].events[g].competitions[0].competitors[0].team._id =globalData["2015week1"].events[g].competitions[0].competitors[0].team.id;
- //    globalData["2015week1"].events[g].competitions[0].competitors[1].team._id =globalData["2015week1"].events[g].competitions[0].competitors[1].team.id;
+ // globalData["2016week1"] = JSON.parse(yield fs.readFile('old_data/original/' + year + 'week1.json', 'utf8'));
+ //  for(var g in globalData["2016week1"].events){
+ //    globalData["2016week1"].events[g].competitions[0].competitors[0].team._id =globalData["2016week1"].events[g].competitions[0].competitors[0].team.id;
+ //    globalData["2016week1"].events[g].competitions[0].competitors[1].team._id =globalData["2016week1"].events[g].competitions[0].competitors[1].team.id;
     
- //    yield this.mongo.db('pickem').collection('teams').save(_.pick(globalData["2015week1"].events[g].competitions[0].competitors[0].team, '_id', 'location', 'name', 'abbreviation'));
- //    yield this.mongo.db('pickem').collection('teams').save(_.pick(globalData["2015week1"].events[g].competitions[0].competitors[1].team, '_id', 'location', 'name', 'abbreviation'));
+ //    yield this.mongo.db('pickem').collection('teams').save(_.pick(globalData["2016week1"].events[g].competitions[0].competitors[0].team, '_id', 'location', 'name', 'abbreviation'));
+ //    yield this.mongo.db('pickem').collection('teams').save(_.pick(globalData["2016week1"].events[g].competitions[0].competitors[1].team, '_id', 'location', 'name', 'abbreviation'));
  //  }
   
 this.body = "Here";
@@ -341,12 +342,12 @@ function *loadall(year) {
   console.log(globalData.schedule.length);
 
   // load teams
-  for(var g in globalData["2015week1"].events){
-    globalData["2015week1"].events[g].competitions[0].competitors[0].team._id =globalData["2015week1"].events[g].competitions[0].competitors[0].team.id;
-    globalData["2015week1"].events[g].competitions[0].competitors[1].team._id =globalData["2015week1"].events[g].competitions[0].competitors[1].team.id;
+  for(var g in globalData["2016week1"].events){
+    globalData["2016week1"].events[g].competitions[0].competitors[0].team._id =globalData["2016week1"].events[g].competitions[0].competitors[0].team.id;
+    globalData["2016week1"].events[g].competitions[0].competitors[1].team._id =globalData["2016week1"].events[g].competitions[0].competitors[1].team.id;
     
-    yield this.mongo.db('pickem').collection('teams').save(_.pick(globalData["2015week1"].events[g].competitions[0].competitors[0].team, '_id', 'location', 'name', 'abbreviation'));
-    yield this.mongo.db('pickem').collection('teams').save(_.pick(globalData["2015week1"].events[g].competitions[0].competitors[1].team, '_id', 'location', 'name', 'abbreviation'));
+    yield this.mongo.db('pickem').collection('teams').save(_.pick(globalData["2016week1"].events[g].competitions[0].competitors[0].team, '_id', 'location', 'name', 'abbreviation'));
+    yield this.mongo.db('pickem').collection('teams').save(_.pick(globalData["2016week1"].events[g].competitions[0].competitors[1].team, '_id', 'location', 'name', 'abbreviation'));
   }
 
   //load games and picks
@@ -405,7 +406,7 @@ function *season() {
         userReuse[member].scores = [];
 
         for(var i = 1;i<=16;i++){
-          var hello = yield this.mongo.db('pickem').collection('picks').findOne({week: i+'', season: '2015', user:userReuse[member]._id});
+          var hello = yield this.mongo.db('pickem').collection('picks').findOne({week: i+'', season: '2016', user:userReuse[member]._id});
           if(hello !== null){
             userReuse[member].scores.push({week: i, score: hello.total, wins: hello.wins});
           }else{
@@ -424,11 +425,11 @@ function *season() {
 }
 
 function *results(week) {
-  if(typeof week === 'object')week = '1';
+  if(typeof week === 'object')week = currentWeek();
   globalData.weeks[parseInt(week, 10)-1].current = true;
 
 
-  var thisweek =  yield this.mongo.db('pickem').collection('weeks').findOne({week: parseInt(week), season: '2015'});
+  var thisweek =  yield this.mongo.db('pickem').collection('weeks').findOne({week: parseInt(week), season: '2016'});
   var games = {};
   if(thisweek !== null){
     games = thisweek.games;
@@ -452,7 +453,7 @@ function *results(week) {
       if(typeof userReuse[member] == 'undefined'){
         userReuse[member] = yield this.mongo.db('pickem').collection('users').findOne({_id: member });
 
-        var mygames =  yield this.mongo.db('pickem').collection('picks').findOne({week: week, season: '2015', user:userReuse[member]._id});
+        var mygames =  yield this.mongo.db('pickem').collection('picks').findOne({week: week, season: '2016', user:userReuse[member]._id});
         if(mygames !== null){
           userReuse[member].games = mygames.picks;
           userReuse[member].total = mygames.total;
@@ -481,10 +482,10 @@ function *results(week) {
 
 
 function *picker(week) {
-  if(typeof week === 'object')week = '1';
+  if(typeof week === 'object')week = currentWeek();
   globalData.weeks[parseInt(week, 10)-1].current = true;
 
-  var mygames = yield this.mongo.db('pickem').collection('weeks').findOne({week: parseInt(week, 10), season: '2015' });
+  var mygames = yield this.mongo.db('pickem').collection('weeks').findOne({week: parseInt(week, 10), season: '2016' });
   var games = mygames.games;
   for(var game in games){
     games[game].home = yield teamFromID.call(this,games[game].home);
@@ -492,7 +493,7 @@ function *picker(week) {
     games[game].winner = yield teamFromID.call(this,games[game].winner);
   }
 
-  var pickems =  yield this.mongo.db('pickem').collection('picks').findOne({week: week, season: '2015', user: this.req.user._id });
+  var pickems =  yield this.mongo.db('pickem').collection('picks').findOne({week: week, season: '2016', user: this.req.user._id });
   var picks = [];
   if(pickems !== null){
     picks = pickems.picks;
@@ -510,9 +511,9 @@ function *picker(week) {
 function *pickem(week){
   this.body = this.request.body;
   var changed = this.request.body.changed;
-  var item = {picks: changed, user: this.req.user._id, week: week, season: '2015'}
+  var item = {picks: changed, user: this.req.user._id, week: week, season: '2016'}
 
-  var old =  yield this.mongo.db('pickem').collection('picks').findOne({week: week, season: '2015', user: this.req.user._id });
+  var old =  yield this.mongo.db('pickem').collection('picks').findOne({week: week, season: '2016', user: this.req.user._id });
   if(old !== null){
       item._id = old._id;
   }
@@ -550,12 +551,12 @@ function *passwordUpdate(){
 }
 
 function *test(){
-  var week = '1';
-  var year = '2015';
+  var week = currentWeek();
+  var year = '2016';
   var weekData = JSON.parse(yield fs.readFile('old_data/original/' + year + 'week' + week + '.json', 'utf8'));
   var games = [];
 
-  var mygames = yield this.mongo.db('pickem').collection('weeks').findOne({week: parseInt(week, 10), season: '2015' });
+  var mygames = yield this.mongo.db('pickem').collection('weeks').findOne({week: parseInt(week, 10), season: '2016' });
 
   for(var g in weekData.events) {
     var winner = "";
@@ -698,7 +699,11 @@ io.on('message', function(msg){
 });
 // listen
 
+function currentWeek(){
+  return moment().add(-2, 'days').week() - 36 || 1;
+}
+// console.log(currentWeek());
 app.listen(process.env.PORT || 3000);
 console.log('listening on port'+(process.env.PORT || 3000));
 
-//http://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?calendartype=blacklist&limit=100&dates=2015&seasontype=2&week=2
+//http://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?calendartype=blacklist&limit=100&dates=2016&seasontype=2&week=2

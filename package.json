@@ -27,6 +27,7 @@
     "koa-socket": "^4.4.0",
     "koa-static-folder": "^0.1.6",
     "lodash": "^4.5.1",
+    "moment": "^2.14.1",
     "mongodb": "^2.2.7",
     "mustache": "^2.2.1",
     "node-static": "^0.7.7",
