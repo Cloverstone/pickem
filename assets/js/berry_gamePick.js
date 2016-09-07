@@ -60,8 +60,12 @@
 			this.self.find('[type="radio"]:checked').focus();
 		},
 		satisfied: function(){
-
-			return (this.self.find('.' + this.selectedClass).length >0) && (this.$el.val() > 0) && (_.countBy(this.owner.usedValues, _.identity)[this.$el.val()] <= 1) //this.$el.is(':checked');
+			if(limited){
+				debugger;
+				return (this.self.find('.' + this.selectedClass).length >0); //this.$el.is(':checked');
+			}else{
+				return (this.self.find('.' + this.selectedClass).length >0) && (this.$el.val() > 0) && (_.countBy(this.owner.usedValues, _.identity)[this.$el.val()] <= 1) //this.$el.is(':checked');
+			}
 		},
 	});
 })(Berry, jQuery);

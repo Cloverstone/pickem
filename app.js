@@ -24,32 +24,34 @@ const moment = require( 'moment' )
 const io = new IO()
 
 // const convert = require('koa-convert') // necessary until koa-generic-session has been updated to support koa@2 
-// const session = require('koa-generic-session')
+const session = require('koa-generic-session')
 // const MongoStore = require('connect-mongo')(session);
-const session = require('koa-session-store');
-const mongoStore = require('koa-session-mongo');
-
-
-app.keys = ['secret']
- // app.use(session({
- //    key: 'koapassportexample.sid',
- //  }));
-
-
-app.use(session({
-  store: mongoStore.create({
-    // db: 'pickem',
-    url: 'mongodb://pickem:pickem117@ds011439.mlab.com:11439/pickem',
-
-    key: 'koapassportexample.sid'
-  })
-}));
+// const session = require('koa-session-store');
+// const mongoStore = require('koa-session-mongo');
 
 const _ = require('lodash');
 const passport = require('koa-passport')
 
 app.use(serve('./assets'));
 app.use(parse());
+app.keys = ['secret']
+ app.use(session({
+    key: 'koapassportexample.sid',
+  }));
+
+// app.use(session({
+//   store: mongoStore.create({
+//     // db: 'pickem',
+//     url: 'mongodb://pickem:pickem117@ds011439.mlab.com:11439/pickem'
+//     //,
+
+//     // key: 'koapassportexample.sid'
+//   })
+// }));
+
+
+// app.use(serve('./assets'));
+// app.use(parse());
 app.use(passport.initialize())
 app.use(passport.session())
 
@@ -99,6 +101,7 @@ app.use(
 var myUser;
 var myMongo;
 app.use(function *(next){
+
   myUser = user.call(this);
   myMongo = this.mongo;
   yield next;
@@ -178,7 +181,7 @@ app.use(
     }
     //globalData.groups = yield this.mongo.db('pickem').collection('groups').find().toArray();
     if(typeof this.req.user !== 'undefined'){
-      if(this.req.user.username == 'adam'){
+      if(this.req.user.username == 'adams'){
         globalData.groups = yield this.mongo.db('pickem').collection('groups').find().toArray();
       }else{
         globalData.groups = yield myMongo.db('pickem').collection('groups').find({members: ObjectId(this.req.user._id)}).toArray();
@@ -406,6 +409,7 @@ function *season() {
       member = group.members[m];
 
       if(typeof userReuse[member] == 'undefined'){
+        console.log(userReuse[member]);
         userReuse[member] = yield this.mongo.db('pickem').collection('users').findOne({_id: member });
         userReuse[member].scores = [];
 
