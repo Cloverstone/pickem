@@ -22,7 +22,7 @@ window.onload =function(){
 
 	$('#form').berry({
 		name: 'picks_form',
-		actions:['save'],
+		actions:false,
 		default:{type: 'gamePick', min: min, max: max, default:{label: 'Choose', value: '0'}, required: true, value:{points: 0}},
 		attributes: _.keyBy(picks, 'id'), 
 		fields: data 
