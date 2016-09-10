@@ -16,9 +16,10 @@ var ObjectId = require('mongodb').ObjectID;
 // var mongoose = require('koa-mongoose')
 const mongo = require('koa-mongo');
 
-var req = require('request');
+// var req = require('request');
 const IO = require( 'koa-socket' )
 const moment = require( 'moment' )
+var request = require('koa-request');
 
 
 const io = new IO()
@@ -196,6 +197,8 @@ app.use(
 
 
 app.use(route.get('/', season));
+app.use(route.get('/results/update', test));
+
 app.use(route.get('/results/:week', results));
 app.use(route.get('/results/', results));
 app.use(route.get('/picks/:week', picker));
@@ -208,7 +211,6 @@ app.use(route.get('/loadall/:year', newLoadall));
 app.use(route.get('/account', account));
 app.use(route.post('/account', accountUpdate));
 app.use(route.post('/password', passwordUpdate));
-app.use(route.get('/test', test));
 
 
 
@@ -563,13 +565,16 @@ function *test(){
   var week = currentWeek();
   var year = '2016';
   // var weekData = JSON.parse(yield fs.readFile('old_data/original/' + year + 'week' + week + '.json', 'utf8'));
+  var target = 'http://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?calendartype=blacklist&limit=100&dates='+year+'&seasontype=2&week='+week;
 
-  var weekData = req('http://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?calendartype=blacklist&limit=100&dates='+year+'&seasontype=2&week='+week)
+  var weekData = yield request(target);
+  weekData = JSON.parse(weekData.body);
+  this.body = weekData;
 
   var games = [];
 
   var mygames = yield this.mongo.db('pickem').collection('weeks').findOne({week: parseInt(week, 10), season: '2016' });
-
+ 
   for(var g in weekData.events) {
     var winner = "";
     var temp = weekData.events[g].competitions[0];
@@ -582,7 +587,6 @@ function *test(){
     mygames.games[g].winner = winner;
     games.push(winner);
   }
-
   this.mongo.db('pickem').collection('weeks').save(mygames);
 
   var picks = yield this.mongo.db('pickem').collection('picks').find({week: week, season: year}).toArray();
