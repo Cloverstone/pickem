@@ -562,7 +562,10 @@ function *passwordUpdate(){
 function *test(){
   var week = currentWeek();
   var year = '2016';
-  var weekData = JSON.parse(yield fs.readFile('old_data/original/' + year + 'week' + week + '.json', 'utf8'));
+  // var weekData = JSON.parse(yield fs.readFile('old_data/original/' + year + 'week' + week + '.json', 'utf8'));
+
+  var weekData = req('http://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?calendartype=blacklist&limit=100&dates='+year+'&seasontype=2&week='+week)
+
   var games = [];
 
   var mygames = yield this.mongo.db('pickem').collection('weeks').findOne({week: parseInt(week, 10), season: '2016' });
@@ -712,4 +715,3 @@ function currentWeek(){
 app.listen(process.env.PORT || 3000);
 console.log('listening on port'+(process.env.PORT || 3000));
 
-//http://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?calendartype=blacklist&limit=100&dates=2016&seasontype=2&week=2
