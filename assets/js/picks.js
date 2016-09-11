@@ -55,7 +55,7 @@ window.onload =function(){
 	
 }
 submitPicks = function(){
-if(mymodal){mymodal.ref.modal('hide');}
+if(typeof mymodal !== 'undefined'){mymodal.ref.modal('hide');}
 $.ajax({
 	  				type: "POST",
 					  url: '/picks/'+week,
