@@ -1,0 +1,76 @@
+<div> <div class="limited-width" style="float:left">
+	{{>weeks}}
+
+
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs" role="tablist">
+  	{{#groups}}
+    <li role="presentation" class=""><a href="#{{_id}}" aria-controls="{{_id}}" role="tab" data-toggle="tab">{{name}}</a></li>
+    {{/groups}}
+  </ul>
+	<div class="clearfix teams">
+		<span class="main">Away</span>
+		{{#games}}
+			<span class="{{#awaywin}} correct{{/awaywin}}"><span class="cube team-icon {{away.name}} {{away.location}}"></span></span>
+		{{/games}}
+	</div>
+	<div class="clearfix teams">
+		<span class="main">Home</span>
+		{{#games}}
+			<span class="{{#homewin}} correct{{/homewin}}"><span class="cube team-icon {{home.name}} {{home.location}}"></span></span>
+		{{/games}}
+	</div>	<div style="border-bottom:solid 5px #333; margin-bottom:5px"></div>
+
+
+
+  <!-- Tab panes -->
+  <div class="tab-content">
+  	{{#groups}}
+    <div role="tabpanel" class="tab-pane active" id="{{_id}}">
+	      	{{^limited}}
+					{{#members}}
+						<div class="member {{#current}}active{{/current}}">
+							<span class="main">
+								<span class="username">{{username}}</span>
+								<span class="total">{{total}}</span>
+								<span class="wins">{{wins}}/17</span>
+							</span>
+							{{#games}}
+							<span class="playerResult{{#winner}} correct{{/winner}}">
+								<span class="team-icon {{pick.name}} {{pick.location}}"></span>
+								{{points}}
+							</span>
+							{{/games}}
+						</div>
+					{{/members}}
+					{{/limited}}
+					{{#limited}}
+					{{#members}}
+						<div class="member {{#current}}active{{/current}}">
+							<span class="main">
+								<span class="username">{{username}}</span>
+								<span class="total">{{wins}}</span>
+							</span>
+							{{#games}}
+							<span class="playerResult{{#winner}} correct{{/winner}}">
+								<span class="team-icon {{pick.name}} {{pick.location}}"></span>1
+							</span>
+							{{/games}}
+						</div>
+					{{/members}}
+					{{/limited}}
+    </div>
+    {{/groups}}
+  </div>
+
+
+</div>
+<div class="trash-talk" style="float:left;width:300px;margin:10px">
+	<h3 style="color:#f8f8f8">Trash Talk<span></span></h3>
+	<div class="form"></div>
+	<ul class="list-group"></ul>
+</div>
+	<script type="text/javascript" src="/assets/js/results.js"></script>
+
+</div>
+

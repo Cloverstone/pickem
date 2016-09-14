@@ -1,4 +1,7 @@
 window.onload =function(){
+	$('.nav-tabs li a').first().tab('show')
+	$('.visible-xs-block.nav-tabs li a').first().tab('show')
+
 	templates['comment'] = Hogan.compile(`<li  class="list-group-item" style="color:{{user.color}}">{{{content}}}</li>`);
 	$('.form').berry({/*actionTarget:$('.trash-talk h3 span'),*/ actions:['save',''],fields: [{type:'textarea', name:'content',label:false}]}).on('save',function(){
 		socket.emit('message', {group:'Us',content: this.toJSON().content});

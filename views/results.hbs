@@ -1,30 +1,54 @@
 <div> <div class="limited-width" style="float:left">
 	{{>weeks}}
-	<div class="clearfix teams">
+
+
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs hidden-xs" role="tablist">
+  	{{#groups}}
+    <li role="presentation" class=""><a href="#{{_id}}" aria-controls="{{_id}}" role="tab" data-toggle="tab">{{name}}</a></li>
+    {{/groups}}
+  </ul>
+
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs visible-xs-block" role="tablist">
+  	{{#groups}}
+    <li role="presentation" class=""><a href="#small_{{_id}}" aria-controls="small_{{_id}}" role="tab" data-toggle="tab">{{name}}</a></li>
+    {{/groups}}
+  </ul>
+
+
+	<div class="clearfix teams hidden-xs">
 		<span class="main">Away</span>
 		{{#games}}
 			<span class="{{#awaywin}} correct{{/awaywin}}"><span class="cube team-icon {{away.name}} {{away.location}}"></span></span>
 		{{/games}}
 	</div>
-	<div class="clearfix teams">
+	<div class="clearfix teams hidden-xs">
 		<span class="main">Home</span>
 		{{#games}}
 			<span class="{{#homewin}} correct{{/homewin}}"><span class="cube team-icon {{home.name}} {{home.location}}"></span></span>
 		{{/games}}
-	</div>
+	</div>	<div style="border-bottom:solid 5px #333; margin-bottom:5px"></div>
 
-	<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true" style="margin-top:5px">
-		{{#groups}}
-	  <div class="panel panel-pickem">
-	    <div class="panel-heading" role="tab" id="heading{{name}}">
-	      <h4 class="panel-title">
-	        <a role="button" data-toggle="collapse" data-parent="#" href="#{{name}}" aria-expanded="true" aria-controls="{{name}}">
-	          <div>{{name}}</div>
-	        </a>
-	      </h4>
-	    </div>
-	    <div id="{{name}}" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading{{name}}">
-	      <div class="panel-body">
+
+	<div class="clearfix visible-xs-block" style="width:34px;float:left">
+		<div>&nbsp;</div>
+		{{#games}}
+			<div class="{{#awaywin}} correct{{/awaywin}}"><span class="cube team-icon {{away.name}} {{away.location}}"></span></div>
+		{{/games}}
+	</div>
+	<div class="clearfix visible-xs-block" style="width:34px;float:left">
+		<div class="">@</div>
+		{{#games}}
+			<div class="{{#homewin}} correct{{/homewin}}"><span class="cube team-icon {{home.name}} {{home.location}}"></span></div>
+		{{/games}}
+	</div>	
+
+
+  <!-- Tab panes -->
+  <div class="tab-content hidden-xs	">
+  	{{#groups}}
+    <div role="tabpanel" class="tab-pane active" id="{{_id}}">
 	      	{{^limited}}
 					{{#members}}
 						<div class="member {{#current}}active{{/current}}">
@@ -57,11 +81,60 @@
 						</div>
 					{{/members}}
 					{{/limited}}
-	      </div>
-	    </div>
-	  </div>
-		{{/groups}}
-	</div>
+    </div>
+    {{/groups}}
+  </div>
+
+
+
+
+
+  <!-- Tab panes -->
+  <div class="tab-content visible-xs-block" style="width: 240px;float: left;overflow: auto;">
+  	{{#groups}}
+    <div role="tabpanel" class="tab-pane" id="small_{{_id}}" style="white-space: nowrap;">
+	      	{{^limited}}
+					{{#members}}
+						<div class="member {{#current}}active{{/current}}" style="width:34px;display:inline-block;height:auto">
+							<span class="main" style="height:auto;float:none">
+								<!-- <span class="username">{{username}}</span> -->
+								<span class="total" style="font-size:20px;color:{{color}}">{{total}}</span>
+								<!-- <span class="wins">{{wins}}/17</span> -->
+							</span>
+							{{#games}}
+							<span class="playerResult{{#winner}} correct{{/winner}}" style="width:34px">
+								<span class="team_cube cube {{pick.name}} {{pick.location}}">{{points}}</span>
+								
+							</span>
+							{{/games}}
+						</div>
+					{{/members}}
+					{{/limited}}
+
+					{{#limited}}
+					{{#members}}
+						<div class="member {{#current}}active{{/current}}" style="width:68px;display:inline-block;height:auto">
+							<span class="main" style="height:auto;float:none">
+								<!-- <span class="username">{{username}}</span> -->
+								<span class="total" style="font-size:20px;color:{{color}}">{{wins}}</span>
+								<!-- <span class="wins">{{wins}}/17</span> -->
+							</span>
+							{{#games}}
+							<span class="playerResult{{#winner}} correct{{/winner}}" style="width:68px">
+								<span class="team-icon {{pick.name}} {{pick.location}}"></span>1
+							</span>
+							{{/games}}
+						</div>
+					{{/members}}
+					{{/limited}}
+
+    </div>
+    {{/groups}}
+  </div>
+
+
+
+
 </div>
 <div class="trash-talk" style="float:left;width:300px;margin:10px">
 	<h3 style="color:#f8f8f8">Trash Talk<span></span></h3>
@@ -69,6 +142,7 @@
 	<ul class="list-group"></ul>
 </div>
 	<script type="text/javascript" src="/assets/js/results.js"></script>
+
 
 </div>
 
