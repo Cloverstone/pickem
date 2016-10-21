@@ -183,6 +183,8 @@ app.use(
     //globalData.groups = yield this.mongo.db('pickem').collection('groups').find().toArray();
     if(typeof this.req.user !== 'undefined'){
       if(this.req.user.username == 'adam'){
+        globalData.admin = true;
+
         globalData.groups = yield this.mongo.db('pickem').collection('groups').find().toArray();
       }else{
         globalData.groups = yield myMongo.db('pickem').collection('groups').find({members: ObjectId(this.req.user._id)}).toArray();
@@ -197,7 +199,7 @@ app.use(
 
 
 app.use(route.get('/', season));
-app.use(route.get('/results/update', test));
+app.use(route.get('/results/update/:week', test));
 
 app.use(route.get('/results/:week', results));
 app.use(route.get('/results/', results));
@@ -561,8 +563,8 @@ function *passwordUpdate(){
 
 }
 
-function *test(){
-  var week = currentWeek();
+function *test(week){
+  var week = week || currentWeek();
   var year = '2016';
   // var weekData = JSON.parse(yield fs.readFile('old_data/original/' + year + 'week' + week + '.json', 'utf8'));
   var target = 'http://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?calendartype=blacklist&limit=100&dates='+year+'&seasontype=2&week='+week;
@@ -580,13 +582,27 @@ function *test(){
     var temp = weekData.events[g].competitions[0];
 
     if(temp.competitors[0].winner){
-      winner = temp.competitors[0].team.id;
+      for(var w in mygames.games){
+        if( mygames.games[w].home == temp.competitors[0].team.id+""){
+          mygames.games[w].winner = temp.competitors[0].team.id
+        }
+      }
+      // winner = temp.competitors[0].team.id;
     }else if(temp.competitors[1].winner){
-      winner = temp.competitors[1].team.id;
+      for(var w in  mygames.games){
+        if( mygames.games[w].away == temp.competitors[1].team.id+""){
+          mygames.games[w].winner = temp.competitors[1].team.id
+        }
+      }
+      // winner = temp.competitors[1].team.id;
     }
-    mygames.games[g].winner = winner;
-    games.push(winner);
+    // mygames.games[g].winner = winner;
+    // games[g] = winner;
   }
+ // console.log(mygames.games);
+
+ console.log(_.map(mygames.games, 'winner'));
+ games =_.map(mygames.games, 'winner');
   this.mongo.db('pickem').collection('weeks').save(mygames);
 
   var picks = yield this.mongo.db('pickem').collection('picks').find({week: week, season: year}).toArray();
