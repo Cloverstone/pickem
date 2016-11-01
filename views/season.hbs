@@ -11,15 +11,29 @@
     <div id="{{name}}" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading{{name}}">
       <div class="panel-body">
       	<table class="table table-striped" style="margin-bottom: 0;">
+        {{^limited}}
 				{{#members}}
 				<tr>
 					<td style="width:100px;text-align:right">{{username}}</td>
 					{{#scores}}
-						<td><a href="/results/{{week}}">{{score}}</a></td>
+						<td style="width:50px;text-align:center"><a href="/results/{{week}}">{{score}}</a></td>
 					{{/scores}}
 					<td>{{total}}</td>
 				</tr>
 				{{/members}}
+        {{/limited}}
+        {{#limited}}  
+        {{#members}}
+        <tr>
+          <td style="width:100px;text-align:right">{{username}}</td>
+          {{#scores}}
+            <td style="width:50px;text-align:center"><a href="/results/{{week}}">{{wins}}</a></td>
+          {{/scores}}
+          <td>{{totalwins}}</td>
+        </tr>
+        {{/members}}
+        {{/limited}}
+
 				</table>
       </div>
     </div>

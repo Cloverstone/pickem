@@ -9,4 +9,10 @@ window.onload =function(){
 		this.fields.content.focus();
 
 	})
+
+	  $('body').on('click', '.nav.btn-group a',function (e) {
+    e.preventDefault()        
+    debugger;
+    $($(this).attr('href')).tab('show')
+  })
 }

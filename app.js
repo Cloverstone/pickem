@@ -416,11 +416,15 @@ function *season() {
         console.log(userReuse[member]);
         userReuse[member] = yield this.mongo.db('pickem').collection('users').findOne({_id: member });
         userReuse[member].scores = [];
+        userReuse[member].total = 0;
+        userReuse[member].totalwins = 0;
 
         for(var i = 1;i<=16;i++){
           var hello = yield this.mongo.db('pickem').collection('picks').findOne({week: i+'', season: '2016', user:userReuse[member]._id});
           if(hello !== null){
             userReuse[member].scores.push({week: i, score: hello.total, wins: hello.wins});
+             userReuse[member].total += (hello.total || 0);
+             userReuse[member].totalwins += (hello.wins || 0);
           }else{
             userReuse[member].scores.push({week: i, score: '', wins: ''});
           }
@@ -729,7 +733,7 @@ io.on('message', function(msg){
 // listen
 
 function currentWeek(){
-  return (moment().add(-2, 'days').week() - 36 || 1) +'';
+  return (moment().add(-3, 'days').week() - 36 || 1) +'';
 }
 // console.log(currentWeek());
 app.listen(process.env.PORT || 3000);

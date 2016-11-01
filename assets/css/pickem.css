@@ -131,82 +131,87 @@ body{
 
 
 
+@media (max-width: 767px){
 
-.Tennessee { background-color:#648FCC;color:#fff; }
-.Washington { background-color:#773141;color:#fff; }
-.Arizona { background-color:#9B2743; color:#fff;}
-.Tampa { background-color:#D60A0B;color:#D3A205; }
-.Miami { background-color:#008D97;color:#000; }
-.Houston { background-color:#02253A;color:#fff; }
-.Green { background-color:#203731;color:#fff; }
-.Detroit { background-color:#006DB0;color:#000; }
+.show_colors .Tennessee { background-color:#648FCC;color:#fff; }
+.show_colors .Washington { background-color:#773141;color:#fff; }
+.show_colors .Arizona { background-color:#9B2743; color:#fff;}
+.show_colors .Tampa { background-color:#D60A0B;color:#D3A205; }
+.show_colors .Miami { background-color:#008D97;color:#000; }
+.show_colors .Houston { background-color:#02253A;color:#fff; }
+.show_colors .Green { background-color:#203731;color:#fff; }
+.show_colors .Detroit { background-color:#006DB0;color:#000; }
 
-.Louis , .Angeles{ background-color:#13264B;color:#fff; }
-.Seattle { background-color:#002244;color:#A5ACAF; }
-.Francisco { background-color:#AF1E2C;color:#fff; }
-.Diego { background-color:#0C2340;color:#FFB81C; }
-.Kansas { background-color:#B20032;color:#fff; }
-.Denver { background-color:#FB4F14;color:#fff; }
-.Cleveland { background-color:#26201E;color:#fff; }
-.Cincinnati { background-color:#FB4F14;color:#fff; }
+.show_colors .Louis, .show_colors .Angeles{ background-color:#13264B;color:#fff; }
+.show_colors .Seattle { background-color:#002244;color:#A5ACAF; }
+.show_colors .Francisco { background-color:#AF1E2C;color:#fff; }
+.show_colors .Diego { background-color:#0C2340;color:#FFB81C; }
+.show_colors .Kansas { background-color:#B20032;color:#fff; }
+.show_colors .Denver { background-color:#FB4F14;color:#fff; }
+.show_colors .Cleveland { background-color:#26201E;color:#fff; }
+.show_colors .Cincinnati { background-color:#FB4F14;color:#fff; }
 
-.Pittsburgh { background-color:#FFB612;color:#fff; }
-.Philadelphia { background-color:#003B48;color:#C0C0C0; }
-.Oakland { background-color:#000;color:#fff; }
-.Jets { background-color:#0C371D;color:#000; }
-.Jacksonville { background-color:#006778;color:#fff; }
-.Dallas { background-color:#0D254C;color:#fff; }
-.Chicago { background-color:#03202F;color:#fff; }
-.Baltimore { background-color:#280353;color:#000; }
+.show_colors .Pittsburgh { background-color:#FFB612;color:#fff; }
+.show_colors .Philadelphia { background-color:#003B48;color:#C0C0C0; }
+.show_colors .Oakland { background-color:#000;color:#fff; }
+.show_colors .Jets { background-color:#0C371D;color:#fff; }
+.show_colors .Jacksonville { background-color:#006778;color:#fff; }
+.show_colors .Dallas { background-color:#0D254C;color:#fff; }
+.show_colors .Chicago { background-color:#03202F;color:#fff; }
+.show_colors .Baltimore { background-color:#280353;color:#D0B240; }
 
-.Minnesota { background-color:#3B0160;color:#fff; }
-.England { background-color:#0D254C;color:#D6D6D6; }
-.Orleans { background-color:#D2B887;color:#fff; }
-.Giants { background-color:#192F6B;color:#A2AAAD; }
-.Indianapolis { background-color:#003B7B;color:#000; }
-.Carolina { background-color:#0088CE;color:#000; }
-.Buffalo { background-color:#00338D;color:#fff; }
-.Atlanta { background-color:#BD0D18;color:#fff; }
-
-
+.show_colors .Minnesota { background-color:#3B0160;color:#fff; }
+.show_colors .England { background-color:#0D254C;color:#D6D6D6; }
+.show_colors .Orleans { background-color:#D2B887;color:#fff; }
+.show_colors .Giants { background-color:#192F6B;color:#A2AAAD; }
+.show_colors .Indianapolis { background-color:#003B7B;color:#fff; }
+.show_colors .Carolina { background-color:#0088CE;color:#000; }
+.show_colors .Buffalo { background-color:#00338D;color:#fff; }
+.show_colors .Atlanta { background-color:#BD0D18;color:#fff; }
 
 
-.Tennessee:before { background-color:#0D254C; }
-.Washington:before { background-color:#FFB612; }
-.Arizona:before { background-color:#000; }
-.Tampa:before { background-color:#89765F; }
-.Miami:before { background-color:#F5811F; }
-.Houston:before { background-color:#B31B34; }
-.Green:before { background-color:#FFB612; }
-.Detroit:before { background-color:#C5C7CF; }
 
-.Louis:before , .Angeles:before{ background-color:#C9AF74; }
-.Seattle:before { background-color:#69BE28; }
-.Francisco:before { background-color:#E6BE8A; }
-.Diego:before { background-color:#0072CE; }
-.Kansas:before { background-color:#F2C800; }
-.Denver:before { background-color:#002244; }
-.Cleveland:before { background-color:#FE3C00; }
-.Cincinnati:before { background-color:#000; }
 
-.Pittsburgh:before { background-color:#000; }
-.Philadelphia:before { background-color:#D3A205; }
-.Oakland:before { background-color:#C4C8CB; }
-.Jets:before { background-color:#fff; }
-.Jacksonville:before { background-color:#9F792C; }
-.Dallas:before { background-color:#C5CED6; }
-.Chicago:before { background-color:#DD4814; }
-.Baltimore:before { background-color:#D0B240; }
+.show_colors .Tennessee:before { background-color:#0D254C; }
+.show_colors .Washington:before { background-color:#FFB612; }
+.show_colors .Arizona:before { background-color:#000; }
+.show_colors .Tampa:before { background-color:#89765F; }
+.show_colors .Miami:before { background-color:#F5811F; }
+.show_colors .Houston:before { background-color:#B31B34; }
+.show_colors .Green:before { background-color:#FFB612; }
+.show_colors .Detroit:before { background-color:#C5C7CF; }
 
-.Minnesota:before { background-color:#F0BF00; }
-.England:before { background-color:#C80815; }
-.Orleans:before { background-color:#D3A205; }
-.Giants:before { background-color:#CA001A; }
-.Indianapolis:before { background-color:#fff; }
-.Carolina:before { background-color: #A5ACAF; }
-.Buffalo:before { background-color:#C60C30; }
-.Atlanta:before { border-right-color:#000; }
+.show_colors .Louis:before, .show_colors .Angeles:before{ background-color:#C9AF74; }
+.show_colors .Seattle:before { background-color:#69BE28; }
+.show_colors .Francisco:before { background-color:#E6BE8A; }
+.show_colors .Diego:before { background-color:#0072CE; }
+.show_colors .Kansas:before { background-color:#F2C800; }
+.show_colors .Denver:before { background-color:#002244; }
+.show_colors .Cleveland:before { background-color:#FE3C00; }
+.show_colors .Cincinnati:before { background-color:#000; }
 
+.show_colors .Pittsburgh:before { background-color:#000; }
+.show_colors .Philadelphia:before { background-color:#D3A205; }
+.show_colors .Oakland:before { background-color:#C4C8CB; }
+.show_colors .Jets:before { background-color:#fff; }
+.show_colors .Jacksonville:before { background-color:#9F792C; }
+.show_colors .Dallas:before { background-color:#C5CED6; }
+.show_colors .Chicago:before { background-color:#DD4814; }
+.show_colors .Baltimore:before { background-color:#D0B240; }
+
+.show_colors .Minnesota:before { background-color:#F0BF00; }
+.show_colors .England:before { background-color:#C80815; }
+.show_colors .Orleans:before { background-color:#D3A205; }
+.show_colors .Giants:before { background-color:#CA001A; }
+.show_colors .Indianapolis:before { background-color:#fff; }
+.show_colors .Carolina:before { background-color: #A5ACAF; }
+.show_colors .Buffalo:before { background-color:#C60C30; }
+.show_colors .Atlanta:before { border-right-color:#000; }
+}
+.vertical-text {
+  transform: rotate(270deg);
+  transform-origin: left top 0;
+}
 /*
 .team_cube.cube:before{
   content:"&nbsp;";

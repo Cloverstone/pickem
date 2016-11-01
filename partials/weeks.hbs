@@ -1,6 +1,19 @@
-<div class="weeks clearfix">
+<div class=" hidden-xs weeks clearfix">
 <a class="cube main" href="./">Week</a>
 {{#weeks}}
 <a href="./{{week}}" class="cube {{#current}}selected{{/current}}">{{week}}</a>
 {{/weeks}}
+</div>
+
+
+<!-- Single button -->
+<div class="btn-group visible-xs-block" style="position: absolute;left: 100px;top: 60px;">
+  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    Week <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu">
+{{#weeks}}
+<li><a href="./{{week}}">{{week}}</a></li>
+{{/weeks}}
+  </ul>
 </div>
