@@ -41,13 +41,13 @@
 
 
 	<div class="clearfix visible-xs-block" style="width:34px;float:left">
-		<div style="height:80px">&nbsp;</div>
+		<div style="height:90px">&nbsp;</div>
 		{{#games}}
 			<div class="{{#awaywin}} correct{{/awaywin}}" style="height:34px"><span class="cube team-icon {{away.name}} {{away.location}}"></span></div>
 		{{/games}}
 	</div>
 	<div class="clearfix visible-xs-block" style="width:34px;float:left">
-		<div style="height:80px">@</div>
+		<div style="height:90px">@</div>
 		{{#games}}
 			<div class="{{#homewin}} correct{{/homewin}}" style="height:34px"><span class="cube team-icon {{home.name}} {{home.location}}"></span></div>
 		{{/games}}
@@ -105,9 +105,9 @@
 	      	{{^limited}}
 					{{#members}}
 						<div class="member {{#current}}active{{/current}}" style="background:none;width:34px;display:inline-block;height:auto">
-							<span class="main" style="height:75px;float:none">
-								<!-- <span class="username">{{username}}</span> -->
-								<span class="total vertical-text" style="font-size:20px;color:{{color}}">{{total}}</span>
+							<span class="main" style="background:#f8f8f8;height:85px;float:none;width:34px;text-align: center;">
+								<span class="username vertical-text" style="top: auto;font-size: 18px;font-weight: normal;bottom: -5px;left: 5px;">{{username}}</span>
+								<span class="total" style="font-size:20px;color:{{color}}">{{total}}</span>
 								<!-- <span class="wins">{{wins}}/17</span> -->
 							</span>
 							{{#games}}
