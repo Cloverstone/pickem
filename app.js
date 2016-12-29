@@ -177,7 +177,7 @@ app.use(
     // })
 
     globalData.weeks = [];
-    for(var i = 1;i<18;i++ ){
+    for(var i = 1;i<17;i++ ){
       globalData.weeks.push({week:i});
     }
     //globalData.groups = yield this.mongo.db('pickem').collection('groups').find().toArray();
@@ -733,7 +733,7 @@ io.on('message', function(msg){
 // listen
 
 function currentWeek(){
-  return (moment().add(-10, 'days').week() - 35 || 1) +'';
+  return (moment().add(-3, 'days').week() - 36 || 1) +'';
 }
 // console.log(currentWeek());
 app.listen(process.env.PORT || 3000);
