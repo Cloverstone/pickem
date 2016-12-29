@@ -134,10 +134,8 @@ app.use(handlebars({
 function AuthLocalUser(username, password, done) {
    co(function *(next) {
     try {
-      console.log('here');
       return yield myUser.matchUser(username, password);
     } catch (ex) {    
-            console.log('here2');
 
       console.log(ex)
       return null;
@@ -154,6 +152,8 @@ passport.serializeUser(function(user, done) {
 
 passport.deserializeUser(function (id, done) {  
   co(function *(){
+          console.log('here');
+
     var user = yield myUser.getUser(id, done);
     done(null, user);
   })
