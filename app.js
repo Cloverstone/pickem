@@ -150,14 +150,15 @@ passport.serializeUser(function(user, done) {
 });
 
 passport.deserializeUser(function (id, done) {  
-  co(function *(){
+  co(function *(){            
+    console.log('here');
+
     var user = yield myUser.getUser(id, done);
     done(null, user);
   })
 });
 
 app.use(function *(next) {
-            console.log('here');
 
   if(this.req.url !== '/login'){
     if (this.isAuthenticated()) {
@@ -179,7 +180,7 @@ app.use(
     // })
 
     globalData.weeks = [];
-    for(var i = 1;i<17;i++ ){
+    for(var i = 1;i<18;i++ ){
       globalData.weeks.push({week:i});
     }
     //globalData.groups = yield this.mongo.db('pickem').collection('groups').find().toArray();
@@ -421,7 +422,7 @@ function *season() {
         userReuse[member].total = 0;
         userReuse[member].totalwins = 0;
 
-        for(var i = 1;i<=16;i++){
+        for(var i = 1;i<=17;i++){
           var hello = yield this.mongo.db('pickem').collection('picks').findOne({week: i+'', season: '2016', user:userReuse[member]._id});
           if(hello !== null){
             userReuse[member].scores.push({week: i, score: hello.total, wins: hello.wins});
