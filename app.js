@@ -152,7 +152,6 @@ passport.serializeUser(function(user, done) {
 
 passport.deserializeUser(function (id, done) {  
   co(function *(){
-          console.log('here');
 
     var user = yield myUser.getUser(id, done);
     done(null, user);
@@ -160,6 +159,8 @@ passport.deserializeUser(function (id, done) {
 });
 
 app.use(function *(next) {
+            console.log('here');
+
   if(this.req.url !== '/login'){
     if (this.isAuthenticated()) {
       yield next
