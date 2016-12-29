@@ -134,8 +134,11 @@ app.use(handlebars({
 function AuthLocalUser(username, password, done) {
    co(function *(next) {
     try {
+      console.log('here');
       return yield myUser.matchUser(username, password);
     } catch (ex) {    
+            console.log('here2');
+
       console.log(ex)
       return null;
     }
