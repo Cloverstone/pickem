@@ -281,7 +281,7 @@ function *newLoadall(year) {
   
 this.body = "Here";
 // console.log(year);
-  for(var i=1;i<=16;i++){
+  for(var i=1;i<=17;i++){
     // console.log('old_data/original/'+year+'week'+i+'.json');
    var weekData = JSON.parse(yield fs.readFile('old_data/original/' + year + 'week' + i + '.json', 'utf8'));
    var week = {'week': i, 'season': year, 'games': []};
@@ -419,7 +419,7 @@ function *season() {
         userReuse[member].total = 0;
         userReuse[member].totalwins = 0;
 
-        for(var i = 1;i<=16;i++){
+        for(var i = 1;i<=17;i++){
           var hello = yield this.mongo.db('pickem').collection('picks').findOne({week: i+'', season: '2016', user:userReuse[member]._id});
           if(hello !== null){
             userReuse[member].scores.push({week: i, score: hello.total, wins: hello.wins});
