@@ -177,9 +177,10 @@ app.use(
     // })
 
     globalData.weeks = [];
-    for(var i = 1;i<16;i++ ){
+    for(var i = 1;i<18;i++ ){
       globalData.weeks.push({week:i});
     }
+    console.log(globalData.weeks);
     //globalData.groups = yield this.mongo.db('pickem').collection('groups').find().toArray();
     if(typeof this.req.user !== 'undefined'){
       if(this.req.user.username == 'adam'){
@@ -281,7 +282,7 @@ function *newLoadall(year) {
   
 this.body = "Here";
 // console.log(year);
-  for(var i=1;i<=16;i++){
+  for(var i=1;i<=17;i++){
     // console.log('old_data/original/'+year+'week'+i+'.json');
    var weekData = JSON.parse(yield fs.readFile('old_data/original/' + year + 'week' + i + '.json', 'utf8'));
    var week = {'week': i, 'season': year, 'games': []};
@@ -419,7 +420,7 @@ function *season() {
         userReuse[member].total = 0;
         userReuse[member].totalwins = 0;
 
-        for(var i = 1;i<=16;i++){
+        for(var i = 1;i<=17;i++){
           var hello = yield this.mongo.db('pickem').collection('picks').findOne({week: i+'', season: '2016', user:userReuse[member]._id});
           if(hello !== null){
             userReuse[member].scores.push({week: i, score: hello.total, wins: hello.wins});
@@ -733,7 +734,7 @@ io.on('message', function(msg){
 // listen
 
 function currentWeek(){
-  return (moment().add(-3, 'days').week() - 36 || 1) +'';
+  return (moment().add(-17, 'days').week() - 34 || 1) +'';
 }
 // console.log(currentWeek());
 app.listen(process.env.PORT || 3000);
