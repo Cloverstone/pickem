@@ -4,7 +4,7 @@
 const koa = require('koa');
 const app = koa();
 const fs = require('co-fs');
-const co = require('co')
+var co = require('co')
 const route = require('koa-route');
 const parse = require('koa-bodyparser');
 const cookie = require('cookie')
@@ -136,7 +136,6 @@ function AuthLocalUser(username, password, done) {
     try {
       return yield myUser.matchUser(username, password);
     } catch (ex) {    
-
       console.log(ex)
       return null;
     }
@@ -152,7 +151,6 @@ passport.serializeUser(function(user, done) {
 
 passport.deserializeUser(function (id, done) {  
   co(function *(){
-
     var user = yield myUser.getUser(id, done);
     done(null, user);
   })
