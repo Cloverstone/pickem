@@ -177,7 +177,7 @@ app.use(
     // })
 
     globalData.weeks = [];
-    for(var i = 1;i<17;i++ ){
+    for(var i = 1;i<16;i++ ){
       globalData.weeks.push({week:i});
     }
     //globalData.groups = yield this.mongo.db('pickem').collection('groups').find().toArray();
