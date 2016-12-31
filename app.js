@@ -151,7 +151,6 @@ passport.serializeUser(function(user, done) {
 
 passport.deserializeUser(function (id, done) {  
   co(function *(){            
-    console.log('here');
 
     var user = yield myUser.getUser(id, done);
     done(null, user);
